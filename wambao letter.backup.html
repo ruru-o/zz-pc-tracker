@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>for wambao</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-deep: #5f84b8;
+    --sky: #90b0d8;
+    --sky-soft: #c9dcf2;
+    --sky-mist: #eaf2fb;
+    --paper: #fffdf8;
+    --ink: #3a5a85;
+    --ink-strong: #2c4568;
+    --cloud-shadow: rgba(95, 132, 184, 0.28);
+    --ribbon: #f7d9de;
+    --ribbon-deep: #e8a9b4;
+    --gold: #f4d78c;
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --ease-soft: cubic-bezier(.22,1,.36,1);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{
+    scroll-behavior: smooth;
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: linear-gradient(180deg, #dce9fa 0%, #cfe0f6 30%, var(--sky) 78%, var(--sky-deep) 100%);
+    color: var(--ink);
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+  }
+
+  /* subtle macOS-style frosted focus ring, keyboard only */
+  :focus-visible{
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+  :focus:not(:focus-visible){ outline: none; }
+
+  ::selection{
+    background: var(--sky-deep);
+    color: #fff;
+  }
+
+  h1,h2,h3, .display{
+    font-family: "Baloo 2", "Nunito", -apple-system, sans-serif;
+    color: var(--ink-strong);
+    margin: 0;
+  }
+
+  a{ color: inherit; }
+
+  /* ---------- scene ---------- */
+
+  .sky{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .sky::before{
+    /* soft sun glow, upper area, gives depth like macOS wallpapers */
+    content:"";
+    position:absolute;
+    top:-12%;
+    left:50%;
+    width:120vmax;
+    height:120vmax;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.55), rgba(255,255,255,0) 45%);
+  }
+
+  .star{
+    position:absolute;
+    width: 6px; height:6px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: .0;
+    animation: twinkle 6s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:.15; transform: scale(.8);}
+    50%{ opacity:.65; transform: scale(1.15);}
+  }
+
+  .cloud-field{
+    position:absolute; inset:0;
+  }
+
+  .cloud{
+    position:absolute;
+    will-change: transform;
+    filter: drop-shadow(0 12px 18px var(--cloud-shadow));
+    cursor: grab;
+    pointer-events: auto;
+    touch-action: none;
+  }
+  .cloud:active{ cursor: grabbing; }
+
+  .cloud svg{ display:block; width:100%; height:100%; }
+
+  .cloud.drifting{
+    animation: drift linear infinite;
+  }
+  @keyframes drift{
+    from{ transform: translateX(-8vw); }
+    to{ transform: translateX(8vw); }
+  }
+
+  /* ---------- layout ---------- */
+
+  main{
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    padding: 50px 20px 120px;
+  }
+
+  .scene-wrap{
+    width:100%;
+    max-width: 640px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---------- companion (cinnamoroll-inspired, original character) ---------- */
+
+  .companion{
+    width: 168px;
+    height: 168px;
+    margin-bottom: 6px;
+    position: relative;
+    transform: translateZ(0);
+  }
+
+  .companion svg{ width:100%; height:100%; overflow:visible; }
+
+  .ear{ transform-origin: 50% 90%; transition: transform .5s var(--ease-soft); }
+  .companion:hover .ear-l{ transform: rotate(-14deg); }
+  .companion:hover .ear-r{ transform: rotate(14deg); }
+
+  .tail{ transform-origin: 30% 70%; }
+  .companion.wag .tail{ animation: wag 0.6s ease-in-out 2; }
+  @keyframes wag{
+    0%,100%{ transform: rotate(0deg); }
+    50%{ transform: rotate(18deg); }
+  }
+
+  .blink{ animation: blink 5.5s infinite; }
+  @keyframes blink{
+    0%, 92%, 100%{ transform: scaleY(1); }
+    95%{ transform: scaleY(0.1); }
+  }
+
+  .cheek{ opacity: .55; transition: opacity .3s ease; }
+  .companion:hover .cheek{ opacity: .9; }
+
+  .companion-caption{
+    font-size: 13px;
+    color: var(--sky-deep);
+    text-align:center;
+    margin-bottom: 28px;
+    opacity: .85;
+    min-height: 18px;
+  }
+
+  /* ---------- envelope stage & container ---------- */
+
+  .envelope-stage{
+    perspective: 1400px;
+    width: min(580px, 92vw);
+    margin: 0 auto;
+    position: relative;
+    transition: all 0.85s var(--ease-soft);
+  }
+
+  .envelope{
+    position: relative;
+    width: 100%;
+    border-radius: 20px;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: all 0.85s var(--ease-soft);
+  }
+
+  /* Closed envelope */
+  .envelope:not(.open){
+    height: 330px;
+    cursor: pointer;
+  }
+
+  /* Open envelope: frames the glowing letter */
+  .envelope.open{
+    cursor: default;
+    padding-top: 14px;
+    padding-bottom: 22px;
+  }
+
+  .env-back{
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(155deg, #ffffff 0%, #eaf2fb 50%, #d8e7f8 100%);
+    border-radius: 20px;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.8) inset,
+      0 26px 52px -12px var(--cloud-shadow),
+      0 8px 24px -6px rgba(95,132,184,0.35);
+    z-index: 1;
+    transition: all 0.85s var(--ease-soft);
+  }
+
+  .envelope:hover:not(.open) .env-back{
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.95) inset,
+      0 32px 64px -10px var(--cloud-shadow),
+      0 12px 28px -4px rgba(95,132,184,0.45);
+    transform: translateY(-3px);
+  }
+
+  .env-flap{
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 195px;
+    background: linear-gradient(195deg, #e1eefa 0%, var(--sky-soft) 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 82%);
+    transform-origin: top center;
+    transition: transform 0.85s var(--ease-soft), z-index 0.2s, box-shadow 0.85s var(--ease-soft);
+    z-index: 6;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 6px 16px rgba(95,132,184,0.18);
+  }
+
+  .envelope.open .env-flap{
+    transform: rotateX(178deg);
+    z-index: 0;
+    box-shadow: 0 -6px 16px rgba(95,132,184,0.22);
+  }
+
+  .env-seal{
+    position: absolute;
+    left: 50%; top: 160px;
+    width: 52px; height: 52px;
+    transform: translate(-50%,-50%);
+    z-index: 7;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 35% 30%, #c4d7f5, var(--sky-deep) 78%);
+    box-shadow: 0 8px 20px rgba(95,132,184,0.5), inset 0 2px 4px rgba(255,255,255,0.6);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: transform 0.5s var(--ease-soft), opacity 0.4s ease;
+    animation: seal-pulse 2.4s ease-in-out infinite;
+  }
+  .env-seal svg{ width: 26px; height: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
+
+  @keyframes seal-pulse{
+    0%,100%{ transform: translate(-50%,-50%) scale(1); box-shadow: 0 8px 20px rgba(95,132,184,0.5), 0 0 0 0 rgba(144,176,216,0.5); }
+    50%{ transform: translate(-50%,-50%) scale(1.08); box-shadow: 0 12px 26px rgba(95,132,184,0.6), 0 0 0 10px rgba(144,176,216,0); }
+  }
+
+  .envelope.open .env-seal{
+    transform: translate(-50%,-50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .env-pocket{
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: linear-gradient(160deg, #ffffff 0%, #edf5fe 100%);
+    border-radius: 0 0 20px 20px;
+    z-index: 4;
+    box-shadow: 0 -4px 18px rgba(95,132,184,0.16);
+    pointer-events: none;
+    transition: all 0.85s var(--ease-soft);
+  }
+
+  .envelope:not(.open) .env-pocket{
+    height: 235px;
+    clip-path: polygon(0 100%, 100% 100%, 100% 20%, 50% 66%, 0 20%);
+  }
+
+  .envelope.open .env-pocket{
+    height: 115px;
+    clip-path: polygon(0 100%, 100% 100%, 100% 16%, 50% 68%, 0 16%);
+  }
+
+  .env-hint{
+    margin-top: 22px;
+    font-size: 14px;
+    color: var(--sky-deep);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.4s ease;
+  }
+  .env-hint .tap-affordance{
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--sky-deep);
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%,100%{ transform: scale(1); opacity:.5;}
+    50%{ transform: scale(1.6); opacity: 1;}
+  }
+  .envelope.open ~ .env-hint{ display: none; }
+
+  /* ---------- letter card inside envelope (with heavenly glow) ---------- */
+
+  .letter-card{
+    position: relative;
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    margin: 14px 14px 18px;
+    padding: 42px 38px 125px;
+    z-index: 2;
+    border: 1.5px solid rgba(255,255,255,0.95);
+    box-sizing: border-box;
+    transition: transform 0.85s var(--ease-soft), opacity 0.5s ease, max-height 0.85s var(--ease-soft);
+  }
+
+  .envelope:not(.open) .letter-card{
+    max-height: 220px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(40px) scale(0.94);
+    pointer-events: none;
+  }
+
+  /* The Glowing Letter! */
+  .envelope.open .letter-card{
+    opacity: 1;
+    max-height: 4500px;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    /* Soft, ethereal radiant glow */
+    box-shadow:
+      0 0 32px rgba(144, 176, 216, 0.72),
+      0 0 65px rgba(201, 220, 242, 0.58),
+      0 0 110px rgba(255, 255, 255, 0.7),
+      0 22px 50px -10px rgba(95, 132, 184, 0.38),
+      inset 0 0 22px rgba(255, 255, 255, 0.95);
+    animation: letter-luminous-glow 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes letter-luminous-glow{
+    0%{
+      box-shadow:
+        0 0 28px rgba(144, 176, 216, 0.65),
+        0 0 58px rgba(201, 220, 242, 0.5),
+        0 0 95px rgba(255, 255, 255, 0.6),
+        0 20px 45px -10px rgba(95, 132, 184, 0.35),
+        inset 0 0 20px rgba(255, 255, 255, 0.95);
+    }
+    100%{
+      box-shadow:
+        0 0 44px rgba(144, 176, 216, 0.88),
+        0 0 85px rgba(201, 220, 242, 0.75),
+        0 0 135px rgba(255, 255, 255, 0.85),
+        0 26px 55px -10px rgba(95, 132, 184, 0.42),
+        inset 0 0 26px rgba(255, 255, 255, 1);
+    }
+  }
+
+  .letter-card::before{
+    /* faint ruled line texture, like real writing paper */
+    content:"";
+    position:absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 37px,
+      rgba(144,176,216,0.14) 38px
+    );
+    pointer-events:none;
+  }
+
+  .tuck-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(201, 220, 242, 0.45);
+    border: 1px solid rgba(144, 176, 216, 0.45);
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    margin-bottom: 18px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+  }
+  .tuck-btn:hover{
+    background: var(--sky-soft);
+    color: var(--ink-strong);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(95,132,184,0.18);
+  }
+
+  .letter-corner{
+    position:absolute; top: 20px; right: 24px;
+    width: 30px; height:30px;
+    opacity: .5;
+  }
+
+  .letter-greeting{
+    font-family:"Baloo 2", sans-serif;
+    font-size: clamp(22px, 4.4vw, 27px);
+    font-weight: 600;
+    color: var(--ink-strong);
+    margin-bottom: 22px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .letter-body{
+    position: relative;
+    z-index: 1;
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+
+  .letter-body p{
+    margin: 0 0 20px;
+  }
+  .letter-body p:last-child{ margin-bottom: 0; }
+
+  .glow-word{
+    position:relative;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 0 4px;
+    background: rgba(201, 220, 242, 0.28);
+    transition: all .3s ease;
+  }
+  .glow-word:hover, .glow-word:focus-visible{
+    background: var(--sky-soft);
+    color: var(--ink-strong);
+    box-shadow: 0 0 10px rgba(144,176,216,0.6);
+  }
+
+  /* ---------- care reminders (NO checkboxes!) ---------- */
+
+  .care-cards{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0 22px;
+  }
+
+  .care-card{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1.5px solid rgba(144, 176, 216, 0.35);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.35s var(--ease-soft);
+    position: relative;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .care-card:hover{
+    background: #ffffff;
+    border-color: var(--sky);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(95, 132, 184, 0.18), 0 0 16px rgba(144, 176, 216, 0.25);
+  }
+
+  .care-card.active{
+    background: linear-gradient(135deg, #ffffff 0%, #f2f7fd 100%);
+    border-color: var(--sky-deep);
+    box-shadow: 0 8px 22px rgba(95, 132, 184, 0.22), 0 0 20px rgba(144, 176, 216, 0.35);
+  }
+
+  .care-icon{
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--sky-mist);
+    transition: transform 0.3s var(--ease-soft);
+  }
+  .care-card:hover .care-icon, .care-card.active .care-icon{
+    transform: scale(1.15) rotate(6deg);
+  }
+
+  .care-content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .care-title{
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink-strong);
+    line-height: 1.35;
+  }
+
+  .care-sub{
+    font-size: 13px;
+    color: var(--sky-deep);
+    opacity: 0.85;
+    line-height: 1.3;
+  }
+
+  .care-badge{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sky-deep);
+    background: var(--sky-mist);
+    padding: 4px 10px;
+    border-radius: 12px;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: all 0.3s var(--ease-soft);
+    white-space: nowrap;
+  }
+  .care-card.active .care-badge{
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ---------- dramatic mirror interaction ---------- */
+
+  .dramatic-block{
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px dashed rgba(95,132,184,0.35);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .mirror-frame{
+    width: min(340px, 88%);
+    min-height: 190px;
+    margin: 8px auto 14px;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #f7faff 0%, #e2effd 100%);
+    border: 4px solid #ffffff;
+    box-shadow:
+      0 16px 36px -10px rgba(95,132,184,0.38),
+      0 0 0 2px var(--sky-soft),
+      inset 0 0 24px rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.45s var(--ease-soft);
+    padding: 24px 20px;
+  }
+
+  .mirror-frame:hover{
+    transform: scale(1.025);
+    box-shadow:
+      0 20px 44px -8px rgba(95,132,184,0.48),
+      0 0 24px rgba(144, 176, 216, 0.45),
+      0 0 0 3px var(--sky);
+  }
+
+  .mirror-glass{
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mirror-frame .sheen{
+    position: absolute;
+    width: 70px; height: 260%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.7), transparent);
+    top: -80%; left: -60%;
+    transform: rotate(25deg);
+    transition: left 1.2s ease;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .mirror-frame:hover .sheen{ left: 140%; }
+
+  .mirror-ring-pulse{
+    position: absolute;
+    inset: -20px;
+    border-radius: 30px;
+    border: 2px solid rgba(144, 176, 216, 0.4);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mirror-frame.dramatic-flash .mirror-ring-pulse{
+    animation: shockwave-ring 1s var(--ease-soft) forwards;
+  }
+  @keyframes shockwave-ring{
+    0%{ transform: scale(0.8); opacity: 1; border-color: rgba(255,255,255,0.9); }
+    100%{ transform: scale(1.6); opacity: 0; border-color: var(--sky-deep); }
+  }
+
+  /* Mystery State */
+  .mirror-mystery{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.5s ease, transform 0.5s var(--ease-soft);
+  }
+  .mirror-frame.revealed .mirror-mystery{
+    display: none;
+  }
+
+  .mystery-sparkles{
+    font-size: 20px;
+    color: var(--sky-deep);
+    letter-spacing: 4px;
+    animation: twinkle-pulse 2s infinite ease-in-out;
+  }
+  @keyframes twinkle-pulse{
+    0%,100%{ transform: scale(1); opacity: 0.7; }
+    50%{ transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 6px rgba(144,176,216,0.8)); }
+  }
+
+  .mystery-text{
+    font-family: "Baloo 2", sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+
+  .mystery-sub{
+    font-size: 13.5px;
+    color: var(--sky-deep);
+    opacity: 0.85;
+  }
+
+  /* Revealed Dramatic State */
+  .mirror-revealed{
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+  }
+  .mirror-frame.revealed .mirror-revealed{
+    display: flex;
+    animation: dramatic-in 0.8s var(--ease-soft) forwards;
+  }
+
+  @keyframes dramatic-in{
+    0%{
+      opacity: 0;
+      transform: scale(0.8) translateY(12px);
+      filter: blur(8px);
+    }
+    60%{
+      transform: scale(1.05) translateY(-2px);
+      filter: blur(0);
+    }
+    100%{
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .revealed-sparkle{
+    font-size: 15px;
+    color: var(--sky-deep);
+    letter-spacing: 5px;
+    animation: twinkle-pulse 2.2s infinite ease-in-out;
+  }
+
+  .dramatic-quote{
+    margin: 0;
+    font-family: "Baloo 2", sans-serif;
+    font-size: clamp(17px, 3.8vw, 21px);
+    font-weight: 700;
+    line-height: 1.45;
+    color: var(--ink-strong);
+    padding: 0 4px;
+    text-shadow: 0 0 16px rgba(144, 176, 216, 0.45);
+  }
+
+  .revealed-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--sky-deep);
+    background: rgba(255,255,255,0.85);
+    padding: 4px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(144, 176, 216, 0.4);
+    box-shadow: 0 2px 8px rgba(95,132,184,0.12);
+  }
+
+  .mirror-label{
+    font-size: 13.5px;
+    color: var(--sky-deep);
+    text-align: center;
+    opacity: 0.9;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* Dramatic Screen / Letter Flash */
+  .letter-card.dramatic-flash{
+    animation: dramatic-letter-flash 0.9s ease-out;
+  }
+  @keyframes dramatic-letter-flash{
+    0%{
+      box-shadow:
+        0 0 60px rgba(255, 255, 255, 1),
+        0 0 100px rgba(144, 176, 216, 0.95),
+        0 0 160px rgba(201, 220, 242, 0.9),
+        0 30px 70px rgba(95, 132, 184, 0.5);
+    }
+    100%{
+      box-shadow:
+        0 0 32px rgba(144, 176, 216, 0.72),
+        0 0 65px rgba(201, 220, 242, 0.58),
+        0 0 110px rgba(255, 255, 255, 0.7),
+        0 22px 50px -10px rgba(95, 132, 184, 0.38);
+    }
+  }
+
+  /* ---------- signoff: from Bao ---------- */
+
+  .letter-signoff{
+    margin-top: 30px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .signoff-sub{
+    margin: 0;
+    font-size: 16px;
+    color: var(--ink);
+    opacity: 0.85;
+  }
+
+  .signoff-from{
+    margin: 0;
+    font-family: "Baloo 2", sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink-strong);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bao-name{
+    display: inline-block;
+    color: var(--sky-deep);
+    position: relative;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+  .bao-name:hover{
+    background: var(--sky-soft);
+    color: var(--ink-strong);
+    transform: scale(1.06);
+  }
+
+  .bao-heart{
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.3s var(--ease-soft);
+  }
+  .bao-heart:hover{
+    transform: scale(1.3) rotate(-10deg);
+  }
+
+  /* ---------- ribbon seal at end ---------- */
+
+  .seal-block{
+    margin-top: 30px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wax-button{
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 32% 28%, #b7cdec, var(--sky-deep) 78%);
+    box-shadow: 0 10px 22px rgba(95,132,184,0.45), inset 0 2px 4px rgba(255,255,255,0.55);
+    cursor: pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: transform .35s var(--ease-soft), box-shadow .35s ease;
+  }
+  .wax-button svg{ width:34px; height:34px; transition: transform .4s var(--ease-soft); }
+  .wax-button:hover{ transform: translateY(-3px) scale(1.04); }
+  .wax-button:active{ transform: translateY(0) scale(0.94); }
+  .wax-button.sealed svg{ transform: scale(1.15); }
+  .wax-button.sealed{ animation: seal-pop .5s var(--ease-soft); }
+  @keyframes seal-pop{
+    0%{ transform: scale(1); }
+    40%{ transform: scale(1.18); }
+    100%{ transform: scale(1); }
+  }
+
+  .seal-caption{
+    font-size: 13.5px;
+    color: var(--sky-deep);
+    text-align:center;
+    opacity: .85;
+    min-height: 18px;
+  }
+
+  /* ---------- floating magic particles ---------- */
+
+  .burst-cloud{
+    position: fixed;
+    width: 34px;
+    pointer-events:none;
+    z-index: 50;
+    opacity: 0;
+  }
+
+  .magic-sparkle{
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+    font-size: 18px;
+    will-change: transform, opacity;
+  }
+
+  footer.note{
+    position: relative;
+    z-index: 2;
+    text-align:center;
+    font-size: 12.5px;
+    color: rgba(58,90,133,0.55);
+    padding: 0 20px 34px;
+  }
+
+  /* ---------- cursor trail (fine pointer only) ---------- */
+
+  .trail-dot{
+    position: fixed;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 6px 1px rgba(255,255,255,0.7);
+    pointer-events:none;
+    z-index: 999;
+    opacity: 0.8;
+    transform: translate(-50%,-50%);
+  }
+
+  @media (max-width: 480px){
+    .letter-card{ padding: 32px 18px 120px; margin: 10px 8px 16px; }
+    main{ padding-top: 40px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" aria-hidden="true">
+  <div class="cloud-field" id="cloudField"></div>
+</div>
+
+<main>
+  <div class="scene-wrap">
+
+    <div class="companion" id="companion" tabindex="0" role="button" aria-label="a little cloud friend, click to say hello">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <ellipse class="tail" cx="42" cy="150" rx="16" ry="10" fill="#eaf2fb" stroke="#bcd3ee" stroke-width="2"/>
+        <path class="ear ear-l" d="M62 66 C48 40, 52 18, 74 20 C78 40, 74 58, 70 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+        <path class="ear ear-r" d="M138 66 C152 40, 148 18, 126 20 C122 40, 126 58, 130 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+        <ellipse cx="100" cy="118" rx="62" ry="54" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+        <ellipse class="cheek" cx="66" cy="128" rx="9" ry="6" fill="var(--sky-soft)"/>
+        <ellipse class="cheek" cx="134" cy="128" rx="9" ry="6" fill="var(--sky-soft)"/>
+        <g class="blink">
+          <ellipse cx="82" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
+          <ellipse cx="118" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
+        </g>
+        <path d="M92 128 Q100 134 108 128" stroke="var(--ink-strong)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="companion-caption" id="companionCaption">click me</p>
+
+    <div class="envelope-stage" id="envelopeStage">
+      <div class="envelope" id="envelope" role="region" aria-label="envelope and letter for wambao">
+        
+        <!-- Inside back of envelope -->
+        <div class="env-back"></div>
+
+        <!-- Envelope flap (opens upwards) -->
+        <div class="env-flap" id="envFlap"></div>
+
+        <!-- The actual Letter! Resides directly within the envelope -->
+        <article class="letter-card" id="letterCard" tabindex="0" aria-label="Letter from Bao">
+          
+          <!-- Tuck back button -->
+          <button class="tuck-btn" id="tuckBtn" type="button" aria-label="Tuck letter back into envelope" title="Tuck letter back into envelope">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            <span>tuck back into envelope</span>
+          </button>
+
+          <svg class="letter-corner" viewBox="0 0 30 30" aria-hidden="true">
+            <path d="M15 27 C8 21 3 15.5 3 10.5 C3 6.9 5.7 4.2 9 4.2 C11.2 4.2 13.3 5.5 15 7.7 C16.7 5.5 18.8 4.2 21 4.2 C24.3 4.2 27 6.9 27 10.5 C27 15.5 22 21 15 27 Z" fill="var(--sky-soft)"/>
+          </svg>
+
+          <h1 class="letter-greeting">Hi, my pretty Wambao.</h1>
+
+          <div class="letter-body">
+            <p>I want u to know that yes, Bebbi is <span class="glow-word" tabindex="0">pretty</span>. The <span class="glow-word" tabindex="0">eyes</span>, the <span class="glow-word" tabindex="0">lashis</span>, and <span class="glow-word" tabindex="0">everything about u</span> You really are pretty, and i know u already know that you know that...</p>
+
+            <p>Please take care of yourself always, okay? Don't forget to&hellip;</p>
+
+            <!-- Care Reminders: NO checkboxes, warm interactive affirmation cards! -->
+            <div class="care-cards" id="careCards">
+              <div class="care-card" data-care="rest" tabindex="0" role="button" aria-label="rest when you're tired">
+                <span class="care-icon">🌙</span>
+                <div class="care-content">
+                  <span class="care-title">rest when you're tired</span>
+                  <span class="care-sub"></span>
+                </div>
+                <span class="care-badge">🩵</span>
+              </div>
+
+              <div class="care-card" data-care="eat" tabindex="0" role="button" aria-label="eat properly">
+                <span class="care-icon">🍵</span>
+                <div class="care-content">
+                  <span class="care-title">eat properly</span>
+                  <span class="care-sub">para hindi laging galit...</span>
+                </div>
+                <span class="care-badge">🩵</span>
+              </div>
+
+              <div class="care-card" data-care="breathe" tabindex="0" role="button" aria-label="give yourself time to breathe when things get overwhelming">
+                <span class="care-icon">☁️</span>
+                <div class="care-content">
+                  <span class="care-title">give yourself time to breathe</span>
+                  <span class="care-sub">when things get overwhelming</span>
+                </div>
+                <span class="care-badge">🩵</span>
+              </div>
+            </div>
+
+            <p>And whenever you look at yourself, I hope you see what I see&hellip;</p>
+          </div>
+
+          <!-- Dramatic reveal section -->
+          <div class="dramatic-block" id="dramaticBlock">
+            <div class="mirror-frame" id="mirrorFrame" role="button" tabindex="0" aria-label="Tap to reveal what Bao sees">
+              <div class="mirror-glass">
+                <span class="sheen" aria-hidden="true"></span>
+                <span class="mirror-ring-pulse" aria-hidden="true"></span>
+                
+                <!-- Mystery state -->
+                <div class="mirror-mystery" id="mirrorMystery">
+                  <div class="mystery-sparkles">✦</div>
+                  <div class="mystery-text">tap me hehehe</div>
+                  <div class="mystery-sub">what I see&hellip;</div>
+                </div>
+
+                <!-- Revealed dramatic state -->
+                <div class="mirror-revealed" id="mirrorRevealed">
+                  <div class="revealed-sparkle">✦ ✧ ✦</div>
+                  <blockquote class="dramatic-quote" id="dramaticQuote">
+                    “I see a really pretty wammer who deserves to be wammed by a wammer”
+                  </blockquote>
+                  <div class="revealed-badge">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="mirror-label" id="mirrorLabel"></p>
+          </div>
+
+          <!-- Signoff: From: Bao -->
+          <div class="letter-signoff">
+            <p class="signoff-sub">always, your wammer</p>
+            <p class="signoff-from">from: <span class="bao-name" id="baoName" role="button" tabindex="0" title="Click for love from Bao">Bao</span> <span class="bao-heart">✿</span></p>
+          </div>
+
+          <!-- Wax Seal Button -->
+          <div class="seal-block">
+            <button class="wax-button" id="waxButton" aria-label="seal Bao's letter with love">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 20 C7 15.5 2 11.8 2 7.6 C2 4.5 4.4 2.4 7.2 2.4 C9 2.4 10.7 3.4 12 5.1 C13.3 3.4 15 2.4 16.8 2.4 C19.6 2.4 22 4.5 22 7.6 C22 11.8 17 15.5 12 20 Z" fill="#fff" opacity="0.95"/>
+              </svg>
+            </button>
+            <p class="seal-caption" id="sealCaption">seal with love</p>
+          </div>
+        </article>
+
+        <!-- Front pocket of envelope (cradles bottom of letter) -->
+        <div class="env-pocket" id="envPocket"></div>
+
+        <!-- Envelope seal button (on the closed flap) -->
+        <button class="env-seal" id="envSeal" aria-label="Open the envelope">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 20 C7 15.5 2 11.8 2 7.6 C2 4.5 4.4 2.4 7.2 2.4 C9 2.4 10.7 3.4 12 5.1 C13.3 3.4 15 2.4 16.8 2.4 C19.6 2.4 22 4.5 22 7.6 C22 11.8 17 15.5 12 20 Z" fill="#fff" opacity="0.95"/>
+          </svg>
+        </button>
+
+      </div>
+
+      <div class="env-hint" id="envHint">
+        <span>tap the envelope to open</span>
+        <span class="tap-affordance" aria-hidden="true"></span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var isFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+  /* ---------- background clouds ---------- */
+  var field = document.getElementById("cloudField");
+  var cloudSVG = function(scale, opacity){
+    return '<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<ellipse cx="60" cy="60" rx="46" ry="30" fill="#fff" opacity="'+opacity+'"/>' +
+      '<ellipse cx="110" cy="46" rx="54" ry="36" fill="#fff" opacity="'+opacity+'"/>' +
+      '<ellipse cx="150" cy="62" rx="38" ry="26" fill="#fff" opacity="'+opacity+'"/>' +
+      '</svg>';
+  };
+
+  var cloudConfigs = [
+    {w:150, top:"8%",  left:"-10%", dur:46, opacity:0.9},
+    {w:110, top:"18%", left:"60%",  dur:60, opacity:0.75},
+    {w:190, top:"30%", left:"-16%", dur:70, opacity:0.85},
+    {w:90,  top:"6%",  left:"75%",  dur:38, opacity:0.6},
+    {w:130, top:"46%", left:"70%",  dur:54, opacity:0.7},
+    {w:160, top:"60%", left:"-12%", dur:65, opacity:0.55}
+  ];
+
+  cloudConfigs.forEach(function(cfg, i){
+    var el = document.createElement("div");
+    el.className = "cloud" + (reduceMotion ? "" : " drifting");
+    el.style.width = cfg.w + "px";
+    el.style.top = cfg.top;
+    el.style.left = cfg.left;
+    if(!reduceMotion){
+      el.style.animationDuration = cfg.dur + "s";
+      el.style.animationDirection = (i % 2 === 0) ? "alternate" : "alternate-reverse";
+    }
+    el.innerHTML = cloudSVG(1, cfg.opacity);
+    field.appendChild(el);
+    makeDraggable(el);
+  });
+
+  // a few twinkle stars near the top
+  for(var s=0; s<14; s++){
+    var star = document.createElement("div");
+    star.className = "star";
+    star.style.left = (Math.random()*100) + "%";
+    star.style.top = (Math.random()*22) + "%";
+    star.style.animationDelay = (Math.random()*6) + "s";
+    field.appendChild(star);
+  }
+
+  function makeDraggable(el){
+    var dragging = false, startX, startY, baseX = 0, baseY = 0, curX = 0, curY = 0;
+
+    function pointerDown(e){
+      dragging = true;
+      el.style.animationPlayState = "paused";
+      var p = getPoint(e);
+      startX = p.x; startY = p.y;
+      el.setPointerCapture && e.pointerId != null && el.setPointerCapture(e.pointerId);
+    }
+    function pointerMove(e){
+      if(!dragging) return;
+      var p = getPoint(e);
+      curX = baseX + (p.x - startX);
+      curY = baseY + (p.y - startY);
+      el.style.transform = "translate(" + curX + "px," + curY + "px)";
+    }
+    function pointerUp(){
+      if(!dragging) return;
+      dragging = false;
+      baseX = curX; baseY = curY;
+      // gentle drift back toward original animation over time
+      setTimeout(function(){
+        el.style.transition = "transform 1.8s cubic-bezier(.22,1,.36,1)";
+        el.style.transform = "translate(0,0)";
+        baseX = 0; baseY = 0;
+        setTimeout(function(){
+          el.style.transition = "";
+          el.style.animationPlayState = "running";
+        }, 1850);
+      }, 200);
+    }
+    function getPoint(e){
+      if(e.touches && e.touches[0]) return {x:e.touches[0].clientX, y:e.touches[0].clientY};
+      return {x:e.clientX, y:e.clientY};
+    }
+
+    el.addEventListener("pointerdown", pointerDown);
+    window.addEventListener("pointermove", pointerMove);
+    window.addEventListener("pointerup", pointerUp);
+    el.addEventListener("touchstart", pointerDown, {passive:true});
+    window.addEventListener("touchmove", pointerMove, {passive:true});
+    window.addEventListener("touchend", pointerUp);
+  }
+
+  /* ---------- companion interactions ---------- */
+  var companion = document.getElementById("companion");
+  var caption = document.getElementById("companionCaption");
+  var captions = ["hihi Wambao! 🩵", "you poked me!", "Bao says wambao is the prettiest", "wag wag wag!! ✨", "open Bao's envelope! ✉️"];
+  var capIndex = 0;
+
+  function poke(){
+    companion.classList.remove("wag");
+    void companion.offsetWidth;
+    companion.classList.add("wag");
+    caption.textContent = captions[capIndex % captions.length];
+    capIndex++;
+    playNote(784);
+    var rect = companion.getBoundingClientRect();
+    spawnFloatingParticles(rect.left + rect.width/2, rect.top + 30, ["✨", "🩵", "☁️"], 5);
+  }
+  companion.addEventListener("click", poke);
+  companion.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); poke(); }
+  });
+
+  // subtle parallax ear-follow with pointer, fine pointers only
+  if(isFinePointer && !reduceMotion){
+    window.addEventListener("pointermove", function(e){
+      var rect = companion.getBoundingClientRect();
+      var cx = rect.left + rect.width/2;
+      var cy = rect.top + rect.height/2;
+      var dx = (e.clientX - cx) / window.innerWidth;
+      var dy = (e.clientY - cy) / window.innerHeight;
+      companion.style.transform = "rotate(" + (dx*4) + "deg)";
+    });
+  }
+
+  /* ---------- gentle sound synthesis (Web Audio API) ---------- */
+  var audioCtx = null;
+  function getAudioCtx(){
+    if(!audioCtx && (window.AudioContext || window.webkitAudioContext)){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx && audioCtx.state === "suspended"){
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playPop(){
+    try {
+      var ctx = getAudioCtx();
+      if(!ctx) return;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.16);
+    } catch(e){}
+  }
+
+  function playChime(){
+    try {
+      var ctx = getAudioCtx();
+      if(!ctx) return;
+      // Dreamy ethereal harp arpeggio: F#5, A#5, C#6, F#6
+      var notes = [739.99, 932.33, 1108.73, 1479.98];
+      notes.forEach(function(freq, i){
+        setTimeout(function(){
+          try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.12, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.85);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.9);
+          } catch(e){}
+        }, i * 90);
+      });
+    } catch(e){}
+  }
+
+  function playNote(freq){
+    try {
+      var ctx = getAudioCtx();
+      if(!ctx) return;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq || 587.33, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.38);
+    } catch(e){}
+  }
+
+  /* ---------- magic floating particles ---------- */
+  function spawnFloatingParticles(originX, originY, emojis, count){
+    if(reduceMotion) return;
+    var symbols = emojis || ["🩵", "✨", "🤍", "✦"];
+    var n = count || 12;
+    for(var i=0; i<n; i++){
+      (function(idx){
+        var el = document.createElement("div");
+        el.className = "magic-sparkle";
+        el.textContent = symbols[idx % symbols.length];
+        el.style.left = originX + "px";
+        el.style.top = originY + "px";
+        document.body.appendChild(el);
+
+        var angle = (Math.PI * 2 * idx) / n + (Math.random() * 0.4 - 0.2);
+        var dist = 50 + Math.random() * 70;
+        var dx = Math.cos(angle) * dist;
+        var dy = Math.sin(angle) * dist - 30;
+        var rot = (Math.random() * 60) - 30;
+
+        requestAnimationFrame(function(){
+          el.style.transition = "transform 0.9s cubic-bezier(.22,1,.36,1), opacity 0.85s ease";
+          el.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + rot + "deg) scale(" + (0.9 + Math.random()*0.5) + ")";
+          el.style.opacity = "1";
+          setTimeout(function(){
+            el.style.opacity = "0";
+          }, 550);
+        });
+        setTimeout(function(){ el.remove(); }, 1050);
+      })(i);
+    }
+  }
+
+  /* ---------- envelope open & tuck interactions ---------- */
+  var envelope = document.getElementById("envelope");
+  var letterCard = document.getElementById("letterCard");
+  var envSeal = document.getElementById("envSeal");
+  var envHint = document.getElementById("envHint");
+  var tuckBtn = document.getElementById("tuckBtn");
+  var isEnvelopeOpen = false;
+
+  function openEnvelope(e){
+    if(isEnvelopeOpen) return;
+    isEnvelopeOpen = true;
+    playPop();
+    envelope.classList.add("open");
+    
+    // burst particles at seal location
+    if(e){
+      var p = getPoint(e);
+      spawnFloatingParticles(p.x, p.y, ["🩵", "✨", "🤍"], 12);
+    } else {
+      var rect = envSeal.getBoundingClientRect();
+      spawnFloatingParticles(rect.left + rect.width/2, rect.top + rect.height/2, ["🩵", "✨", "🤍"], 12);
+    }
+
+    // companion reaction
+    companion.classList.remove("wag");
+    void companion.offsetWidth;
+    companion.classList.add("wag");
+    caption.textContent = "wambao's letter is open! ✨";
+
+    // smooth view scroll so the letter is centered comfortably
+    setTimeout(function(){
+      if(!reduceMotion){
+        letterCard.scrollIntoView({behavior: "smooth", block: "start"});
+      }
+    }, 450);
+  }
+
+  function tuckEnvelope(e){
+    if(!isEnvelopeOpen) return;
+    e && e.stopPropagation && e.stopPropagation();
+    isEnvelopeOpen = false;
+    envelope.classList.remove("open");
+    playPop();
+    companion.classList.remove("wag");
+    void companion.offsetWidth;
+    companion.classList.add("wag");
+    caption.textContent = "tucked safely inside";
+    setTimeout(function(){
+      envelope.scrollIntoView({behavior: "smooth", block: "center"});
+    }, 200);
+  }
+
+  envelope.addEventListener("click", function(e){
+    if(!isEnvelopeOpen){
+      openEnvelope(e);
+    }
+  });
+  envelope.addEventListener("keydown", function(e){
+    if((e.key === "Enter" || e.key === " ") && !isEnvelopeOpen){
+      e.preventDefault();
+      openEnvelope();
+    }
+  });
+
+  envSeal.addEventListener("click", function(e){
+    e.stopPropagation();
+    openEnvelope(e);
+  });
+
+  tuckBtn.addEventListener("click", function(e){
+    tuckEnvelope(e);
+  });
+  tuckBtn.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      tuckEnvelope(e);
+    }
+  });
+
+  /* ---------- care cards interaction (no checkboxes!) ---------- */
+  var careCards = document.querySelectorAll(".care-card");
+  var careNotes = [523.25, 659.25, 783.99]; // C5, E5, G5
+
+  careCards.forEach(function(card, idx){
+    function activateCard(e){
+      card.classList.toggle("active");
+      playNote(careNotes[idx % careNotes.length]);
+      var rect = card.getBoundingClientRect();
+      var x = rect.left + rect.width - 35;
+      var y = rect.top + rect.height/2;
+      spawnFloatingParticles(x, y, ["🩵", "✨", "🌸", "☁️"], 8);
+    }
+
+    card.addEventListener("click", activateCard);
+    card.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        activateCard(e);
+      }
+    });
+  });
+
+  /* ---------- dramatic mirror reveal effect ---------- */
+  var mirrorFrame = document.getElementById("mirrorFrame");
+  var mirrorLabel = document.getElementById("mirrorLabel");
+
+  function triggerDramaticMirror(e){
+    var rect = mirrorFrame.getBoundingClientRect();
+    var originX = rect.left + rect.width/2;
+    var originY = rect.top + rect.height/2;
+
+    playChime();
+
+    // Trigger dramatic screen/letter flash
+    letterCard.classList.remove("dramatic-flash");
+    mirrorFrame.classList.remove("dramatic-flash");
+    void letterCard.offsetWidth;
+    letterCard.classList.add("dramatic-flash");
+    mirrorFrame.classList.add("dramatic-flash");
+
+    // Reveal mirror
+    mirrorFrame.classList.add("revealed");
+    mirrorLabel.textContent = "u will always be my most favorite wammer";
+
+    // Dramatic particle explosion
+    spawnFloatingParticles(originX, originY, ["✦", "✨", "🩵", "★", "🤍", "🌸"], 24);
+
+    // Companion ecstatic reaction
+    companion.classList.remove("wag");
+    void companion.offsetWidth;
+    companion.classList.add("wag");
+    caption.textContent = "IT'S TRUE!! 🩵 You're the prettiest wammer! ✨";
+
+    setTimeout(function(){
+      letterCard.classList.remove("dramatic-flash");
+      mirrorFrame.classList.remove("dramatic-flash");
+    }, 1000);
+  }
+
+  mirrorFrame.addEventListener("click", triggerDramaticMirror);
+  mirrorFrame.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      triggerDramaticMirror(e);
+    }
+  });
+
+  /* ---------- interactive signoff: from Bao ---------- */
+  var baoName = document.getElementById("baoName");
+  var baoHeart = document.querySelector(".bao-heart");
+
+  function clickBao(e){
+    e && e.stopPropagation && e.stopPropagation();
+    playNote(880);
+    var rect = baoName.getBoundingClientRect();
+    spawnFloatingParticles(rect.left + rect.width/2, rect.top, ["🩵", "🤍", "✨"], 10);
+    caption.textContent = "Bao loves you forever 🩵";
+  }
+
+  baoName && baoName.addEventListener("click", clickBao);
+  baoHeart && baoHeart.addEventListener("click", clickBao);
+
+  /* ---------- interactive glowing words ---------- */
+  var glowWords = document.querySelectorAll(".glow-word");
+  glowWords.forEach(function(word){
+    word.addEventListener("click", function(e){
+      playNote(659.25);
+      var rect = word.getBoundingClientRect();
+      spawnFloatingParticles(rect.left + rect.width/2, rect.top, ["✨", "🩵"], 6);
+    });
+  });
+
+  /* ---------- wax seal stamp button ---------- */
+  var waxButton = document.getElementById("waxButton");
+  var sealCaption = document.getElementById("sealCaption");
+  var sealed = false;
+
+  function pressSeal(){
+    if(sealed){
+      burstClouds();
+      playChime();
+      return;
+    }
+    sealed = true;
+    waxButton.classList.add("sealed");
+    sealCaption.textContent = ""
+    if(!reduceMotion){ burstClouds(); }
+  }
+  waxButton.addEventListener("click", pressSeal);
+
+  function burstClouds(){
+    var rect = waxButton.getBoundingClientRect();
+    var originX = rect.left + rect.width/2;
+    var originY = rect.top + rect.height/2;
+    spawnFloatingParticles(originX, originY, ["🩵", "☁️", "✨", "🤍"], 16);
+    for(var i=0; i<8; i++){
+      (function(i){
+        var c = document.createElement("div");
+        c.className = "burst-cloud";
+        c.innerHTML = cloudSVG(1, 0.95);
+        c.style.left = originX + "px";
+        c.style.top = originY + "px";
+        document.body.appendChild(c);
+        var angle = (Math.PI * 2 * i) / 8;
+        var dist = 90 + Math.random()*60;
+        var dx = Math.cos(angle) * dist;
+        var dy = Math.sin(angle) * dist;
+        requestAnimationFrame(function(){
+          c.style.transition = "transform 1.1s cubic-bezier(.22,1,.36,1), opacity 1.1s ease";
+          c.style.transform = "translate(" + dx + "px," + dy + "px) scale(1.2)";
+          c.style.opacity = "1";
+          setTimeout(function(){
+            c.style.opacity = "0";
+          }, 650);
+        });
+        setTimeout(function(){ c.remove(); }, 1300);
+      })(i);
+    }
+  }
+
+  /* ---------- cursor trail, fine pointer + no reduced motion only ---------- */
+  if(isFinePointer && !reduceMotion){
+    var dots = [];
+    var maxDots = 7;
+    var lastTime = 0;
+
+    window.addEventListener("pointermove", function(e){
+      var now = Date.now();
+      if(now - lastTime < 35) return;
+      lastTime = now;
+
+      var dot = document.createElement("div");
+      dot.className = "trail-dot";
+      dot.style.left = e.clientX + "px";
+      dot.style.top = e.clientY + "px";
+      document.body.appendChild(dot);
+      dots.push(dot);
+
+      requestAnimationFrame(function(){
+        dot.style.transition = "transform .6s ease, opacity .6s ease";
+        dot.style.transform = "translate(-50%,-50%) scale(0.2)";
+        dot.style.opacity = "0";
+      });
+
+      setTimeout(function(){
+        dot.remove();
+        dots.shift();
+      }, 620);
+
+      if(dots.length > maxDots){
+        var old = dots.shift();
+        if(old) old.remove();
+      }
+    });
+  }
+
+})();
+</script>
+</body>
+</html>

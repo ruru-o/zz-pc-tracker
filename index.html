@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ZZ's Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-deep: #5f84b8;
+    --sky: #90b0d8;
+    --sky-soft: #c9dcf2;
+    --sky-mist: #eaf2fb;
+    --paper: #fffdf8;
+    --ink: #3a5a85;
+    --ink-strong: #2c4568;
+    --cloud-shadow: rgba(95, 132, 184, 0.28);
+    --blue-accent: #3b82f6;
+    --blue-glow: rgba(59, 130, 246, 0.4);
+    --radius-xl: 28px;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 8px;
+    --ease-soft: cubic-bezier(.22,1,.36,1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{
+    scroll-behavior: smooth;
+  }
+
+  body{
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: linear-gradient(180deg, #dce9fa 0%, #cfe0f6 25%, #bcd5f2 60%, var(--sky-deep) 100%);
+    color: var(--ink);
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+  }
+
+  :focus-visible{
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+  :focus:not(:focus-visible){ outline: none; }
+
+  ::selection{
+    background: var(--sky-deep);
+    color: #fff;
+  }
+
+  h1,h2,h3,h4{
+    font-family: "Baloo 2", "Nunito", -apple-system, sans-serif;
+    color: var(--ink-strong);
+    margin: 0;
+  }
+
+  .mono{
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  a{
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ---------- background scene (clouds & stars) ---------- */
+
+  .sky{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .sky::before{
+    content:"";
+    position:absolute;
+    top:-12%;
+    left:50%;
+    width:125vmax;
+    height:125vmax;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.6), rgba(255,255,255,0) 48%);
+  }
+
+  .star{
+    position:absolute;
+    width: 6px; height:6px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: .0;
+    animation: twinkle 6s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:.15; transform: scale(.8);}
+    50%{ opacity:.75; transform: scale(1.25); filter: drop-shadow(0 0 4px #fff);}
+  }
+
+  .cloud-field{
+    position:absolute; inset:0;
+  }
+
+  .cloud{
+    position:absolute;
+    will-change: transform;
+    filter: drop-shadow(0 14px 22px var(--cloud-shadow));
+    cursor: grab;
+    pointer-events: auto;
+    touch-action: none;
+  }
+  .cloud:active{ cursor: grabbing; }
+  .cloud svg{ display:block; width:100%; height:100%; }
+
+  .cloud.drifting{
+    animation: drift linear infinite;
+  }
+  @keyframes drift{
+    from{ transform: translateX(-8vw); }
+    to{ transform: translateX(8vw); }
+  }
+
+  /* ---------- top controls ---------- */
+
+  .top-action-bar{
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    z-index: 110;
+  }
+
+  .glass-pill-btn{
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.95);
+    border-radius: 30px;
+    padding: 7px 16px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-strong);
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(95,132,184,0.22);
+    transition: all 0.3s var(--ease-soft);
+  }
+  .glass-pill-btn:hover{
+    transform: translateY(-2px);
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(95,132,184,0.32);
+  }
+
+  /* ---------- main layout ---------- */
+
+  main{
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 18px 80px;
+  }
+
+  .scene-wrap{
+    width: 100%;
+    max-width: 920px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ---------- companion (Cinnamoroll - Clean) ---------- */
+
+  .companion-section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .companion{
+    width: 130px;
+    height: 130px;
+    position: relative;
+    transform: translateZ(0);
+    cursor: pointer;
+    filter: drop-shadow(0 8px 16px rgba(95,132,184,0.28));
+    transition: transform 0.4s var(--ease-spring);
+  }
+  .companion:hover{
+    transform: scale(1.06);
+  }
+  .companion:active{
+    transform: scale(0.96);
+  }
+
+  .companion svg{ width:100%; height:100%; overflow:visible; }
+
+  .ear{ transform-origin: 50% 90%; transition: transform .5s var(--ease-soft); }
+  .companion:hover .ear-l{ transform: rotate(-16deg); }
+  .companion:hover .ear-r{ transform: rotate(16deg); }
+
+  .tail{ transform-origin: 30% 70%; }
+  .companion.wag .tail{ animation: wag 0.6s ease-in-out 3; }
+  @keyframes wag{
+    0%,100%{ transform: rotate(0deg); }
+    50%{ transform: rotate(22deg); }
+  }
+
+  .blink{ animation: blink 5.5s infinite; }
+  @keyframes blink{
+    0%, 92%, 100%{ transform: scaleY(1); }
+    95%{ transform: scaleY(0.1); }
+  }
+
+  .cheek{ opacity: .65; transition: opacity .3s ease; }
+  .companion:hover .cheek{ opacity: .95; }
+
+  /* ---------- title ---------- */
+
+  .header-group{
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .main-title{
+    font-size: clamp(34px, 5.5vw, 46px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    color: var(--ink-strong);
+    text-shadow: 0 2px 14px rgba(255,255,255,0.8);
+  }
+
+  /* ---------- STICKY HIGHLIGHTED PROGRESS BAR HUD ---------- */
+
+  .sticky-hud-wrapper{
+    position: sticky;
+    top: 14px;
+    z-index: 100;
+    width: 100%;
+    margin-bottom: 26px;
+  }
+
+  .sticky-hud-card{
+    width: 100%;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid #90b0d8;
+    border-radius: var(--radius-lg);
+    padding: 18px 24px;
+    box-shadow:
+      0 12px 35px rgba(95, 132, 184, 0.28),
+      0 0 24px rgba(144, 176, 216, 0.35),
+      inset 0 0 16px rgba(255,255,255,0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s var(--ease-soft);
+  }
+
+  .hud-top-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hud-title-wrap{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .hud-label{
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--sky-deep);
+  }
+
+  .hud-count{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--sky-mist);
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+
+  /* Standard Percentage Counter */
+  .hud-percentage-wrap{
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .hud-percent-value{
+    font-family: "Baloo 2", sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--ink-strong);
+    line-height: 1;
+  }
+
+  .hud-percent-symbol{
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--sky-deep);
+  }
+
+  /* Highlighted High-Visibility Progress Bar */
+  .hud-bar-container{
+    width: 100%;
+    height: 20px;
+    background: #e2eaf5;
+    border: 1.5px solid #a3c2e6;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(95, 132, 184, 0.2);
+  }
+
+  .hud-bar-fill{
+    height: 100%;
+    width: 29.86%; /* Dynamically calculated */
+    background: linear-gradient(90deg, #4677aa 0%, #5f8fb8 40%, #3b82f6 75%, #60a5fa 100%);
+    border-radius: 10px;
+    position: relative;
+    transition: width 0.7s var(--ease-spring);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+  }
+  .hud-bar-fill::after{
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    animation: bar-glimmer 2.4s infinite;
+  }
+  @keyframes bar-glimmer{
+    0%{ transform: translateX(-100%); }
+    100%{ transform: translateX(200%); }
+  }
+
+  .hud-stats-row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .stat-group{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stat-group .stat-val{
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+  .stat-group.spent .stat-val{
+    color: #1d4ed8;
+  }
+  .stat-group.remaining .stat-val{
+    color: #b91c1c;
+  }
+
+  /* ---------- case showcase stage (pure blue) ---------- */
+
+  .case-stage-card{
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid rgba(255,255,255,0.95);
+    border-radius: var(--radius-xl);
+    padding: 26px;
+    box-shadow:
+      0 18px 45px -10px rgba(95, 132, 184, 0.28),
+      inset 0 0 24px rgba(255,255,255,0.9);
+    margin-bottom: 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .case-display-frame{
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1/1;
+    position: relative;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.95) 0%, #eaf2fb 70%, #d8e7f8 100%);
+    border-radius: 24px;
+    border: 2px solid rgba(255,255,255,0.95);
+    box-shadow:
+      0 14px 35px -8px rgba(95, 132, 184, 0.3),
+      inset 0 0 24px rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  /* Static Clean Blue Ambient Aura */
+  .case-blue-glow{
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(95, 132, 184, 0.4), rgba(144, 176, 216, 0.2) 60%, transparent 80%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .case-img-layer{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 10px 18px rgba(95,132,184,0.28));
+    transition: transform 0.4s var(--ease-soft);
+  }
+  .case-display-frame:hover .case-img-layer{
+    transform: scale(1.025);
+  }
+
+  .case-caption{
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-strong);
+    text-align: center;
+  }
+  .case-sub-caption{
+    font-size: 12.5px;
+    color: var(--sky-deep);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* ---------- filter toolbar ---------- */
+
+  .filter-toolbar{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .filter-tabs{
+    display: inline-flex;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(255,255,255,0.9);
+    padding: 4px;
+    border-radius: 30px;
+    box-shadow: 0 4px 14px rgba(95,132,184,0.15);
+  }
+
+  .filter-tab{
+    background: transparent;
+    border: none;
+    border-radius: 24px;
+    padding: 7px 18px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.25s var(--ease-soft);
+  }
+  .filter-tab:hover{
+    color: var(--ink-strong);
+  }
+  .filter-tab.active{
+    background: #ffffff;
+    color: var(--ink-strong);
+    box-shadow: 0 4px 12px rgba(95,132,184,0.2);
+  }
+
+  .reset-link{
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--sky-deep);
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+  }
+  .reset-link:hover{ opacity: 1; }
+
+  /* ---------- component cards list ---------- */
+
+  .components-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .comp-card{
+    background: var(--paper);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow:
+      0 12px 28px -8px rgba(95, 132, 184, 0.22),
+      0 0 16px rgba(255,255,255,0.7);
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: 22px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s var(--ease-soft), box-shadow 0.35s var(--ease-soft), border-color 0.3s;
+  }
+  .comp-card:hover{
+    transform: translateY(-2px);
+    box-shadow:
+      0 18px 36px -8px rgba(95, 132, 184, 0.32),
+      0 0 20px rgba(144, 176, 216, 0.35);
+    border-color: #ffffff;
+  }
+
+  .comp-card.purchased{
+    border-color: #a7f3d0;
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  }
+
+  @media (max-width: 760px){
+    .comp-card{
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 16px;
+    }
+  }
+
+  .comp-img-box{
+    width: 100%;
+    aspect-ratio: 1/1;
+    max-width: 150px;
+    max-height: 150px;
+    margin: 0 auto;
+    background: radial-gradient(circle at 50% 50%, #ffffff 0%, var(--sky-mist) 80%);
+    border-radius: var(--radius-md);
+    border: 1.5px solid rgba(144, 176, 216, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+    cursor: zoom-in;
+    box-shadow: inset 0 2px 8px rgba(255,255,255,0.8), 0 4px 12px rgba(95,132,184,0.1);
+    transition: transform 0.35s var(--ease-spring), box-shadow 0.3s;
+  }
+  .comp-img-box:hover{
+    transform: scale(1.04);
+    box-shadow: 0 8px 20px rgba(95,132,184,0.22);
+  }
+
+  .comp-img-box img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(95,132,184,0.2));
+  }
+
+  .zoom-hint{
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 10px;
+    padding: 2px 7px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--sky-deep);
+    opacity: 0;
+    transform: translateY(3px);
+    transition: all 0.2s ease;
+  }
+  .comp-img-box:hover .zoom-hint{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .comp-details{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .comp-badge-row{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 760px){
+    .comp-badge-row{ justify-content: center; }
+  }
+
+  .part-category{
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--sky-deep);
+    background: var(--sky-mist);
+    padding: 3px 9px;
+    border-radius: 10px;
+  }
+
+  .status-badge{
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .status-badge.done{
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .status-badge.pending{
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .comp-name{
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--ink-strong);
+    margin: 2px 0;
+  }
+
+  .comp-specs{
+    font-size: 13px;
+    color: var(--ink);
+    opacity: 0.85;
+    line-height: 1.45;
+  }
+
+  .specs-expand-btn{
+    background: none;
+    border: none;
+    color: var(--sky-deep);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 0;
+    margin-top: 3px;
+  }
+  .specs-expand-btn:hover{
+    color: var(--ink-strong);
+    text-decoration: underline;
+  }
+
+  .specs-drawer{
+    grid-column: 1 / -1;
+    display: none;
+    background: rgba(255,255,255,0.75);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    border: 1px dashed rgba(144, 176, 216, 0.6);
+    margin-top: 8px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .specs-drawer.open{
+    display: block;
+    animation: drawer-fade 0.25s ease;
+  }
+  @keyframes drawer-fade{
+    from{ opacity: 0; transform: translateY(-4px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .comp-actions{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  @media (max-width: 760px){
+    .comp-actions{
+      align-items: center;
+    }
+  }
+
+  .price-tag{
+    text-align: right;
+  }
+  @media (max-width: 760px){
+    .price-tag{ text-align: center; }
+  }
+
+  .price-label{
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--sky-deep);
+    text-transform: uppercase;
+  }
+  .price-amount{
+    font-family: "JetBrains Mono", monospace;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink-strong);
+    line-height: 1.2;
+  }
+  .price-date{
+    font-size: 11px;
+    color: #059669;
+    font-weight: 700;
+  }
+
+  .action-btn-group{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .store-link-btn{
+    background: rgba(201, 220, 242, 0.45);
+    border: 1.5px solid rgba(144, 176, 216, 0.5);
+    border-radius: 18px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-strong);
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  .store-link-btn:hover{
+    background: #ffffff;
+    border-color: var(--sky-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(95,132,184,0.15);
+  }
+
+  .toggle-status-btn{
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 18px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    color: var(--ink);
+    transition: all 0.2s var(--ease-soft);
+  }
+  .toggle-status-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(95,132,184,0.15);
+  }
+  .comp-card.purchased .toggle-status-btn{
+    background: #10b981;
+    border-color: #059669;
+    color: #ffffff;
+  }
+
+  /* ---------- image zoom modal ---------- */
+
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(44, 69, 104, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open{
+    display: flex;
+    opacity: 1;
+  }
+
+  .modal-card{
+    background: #ffffff;
+    border-radius: 24px;
+    max-width: 580px;
+    width: 100%;
+    padding: 28px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modal-pop 0.3s var(--ease-spring);
+  }
+  @keyframes modal-pop{
+    from{ transform: scale(0.88); opacity: 0; }
+    to{ transform: scale(1); opacity: 1; }
+  }
+
+  .modal-close{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--sky-mist);
+    color: var(--ink-strong);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .modal-close:hover{
+    background: var(--sky-soft);
+    transform: rotate(90deg);
+  }
+
+  .modal-img{
+    max-width: 75%;
+    max-height: 280px;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 20px rgba(95,132,184,0.3));
+    margin-bottom: 14px;
+  }
+
+  .modal-title{
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--ink-strong);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .modal-price{
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--sky-deep);
+    margin-bottom: 10px;
+  }
+  .modal-desc{
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.55;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .modal-store-link{
+    background: var(--sky-deep);
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 8px 22px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  .modal-store-link:hover{
+    background: #4a6fa3;
+    transform: translateY(-2px);
+  }
+
+  /* ---------- geometric particle dots & cursor trail ---------- */
+
+  .sparkle-dot{
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    user-select: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 8px 2px rgba(127, 227, 255, 0.9);
+    will-change: transform, opacity;
+  }
+
+  .trail-dot{
+    position: fixed;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 6px 1px rgba(255,255,255,0.8);
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.75;
+    transform: translate(-50%,-50%);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated Cloud & Star Sky Field -->
+<div class="sky" aria-hidden="true">
+  <div class="cloud-field" id="cloudField"></div>
+</div>
+
+<!-- Top Action Bar -->
+<div class="top-action-bar">
+  <button class="glass-pill-btn" id="audioToggleBtn" title="Toggle Sound Feedback">
+    <span id="soundLabel">Sound: On</span>
+  </button>
+</div>
+
+<main>
+  <div class="scene-wrap">
+
+    <!-- Clean Cinnamoroll Companion (No text bubble) -->
+    <div class="companion-section">
+      <div class="companion" id="companion" tabindex="0" role="button" aria-label="Interactive character, click to interact">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <ellipse class="tail" cx="42" cy="150" rx="16" ry="10" fill="#eaf2fb" stroke="#bcd3ee" stroke-width="2"/>
+          <path class="ear ear-l" d="M62 66 C48 40, 52 18, 74 20 C78 40, 74 58, 70 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+          <path class="ear ear-r" d="M138 66 C152 40, 148 18, 126 20 C122 40, 126 58, 130 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+          <ellipse cx="100" cy="118" rx="62" ry="54" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+          <ellipse class="cheek" cx="66" cy="128" rx="9" ry="6" fill="var(--sky-soft)"/>
+          <ellipse class="cheek" cx="134" cy="128" rx="9" ry="6" fill="var(--sky-soft)"/>
+          <g class="blink">
+            <ellipse cx="82" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
+            <ellipse cx="118" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
+          </g>
+          <path d="M92 128 Q100 134 108 128" stroke="var(--ink-strong)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Main Title -->
+    <div class="header-group">
+      <h1 class="main-title">ZZ's Status</h1>
+    </div>
+
+    <!-- STICKY HIGHLIGHTED PROGRESS BAR (Always visible on scroll) -->
+    <div class="sticky-hud-wrapper">
+      <div class="sticky-hud-card" id="stickyHudCard">
+        
+        <div class="hud-top-row">
+          <div class="hud-title-wrap">
+            <span class="hud-label">Build Progress</span>
+            <span class="hud-count" id="securedCount">2 of 6 Purchased</span>
+          </div>
+          
+          <!-- Standard Percentage Counter -->
+          <div class="hud-percentage-wrap">
+            <span class="hud-percent-value" id="percentNumber">29.9</span>
+            <span class="hud-percent-symbol">%</span>
+          </div>
+        </div>
+
+        <!-- Highlighted Progress Bar -->
+        <div class="hud-bar-container" role="progressbar" aria-valuenow="29.9" aria-valuemin="0" aria-valuemax="100">
+          <div class="hud-bar-fill" id="progressFillBar"></div>
+        </div>
+
+        <!-- Metric Details -->
+        <div class="hud-stats-row">
+          <div class="stat-group spent">
+            <span>Spent:</span>
+            <span class="stat-val" id="valSpent">₱15,209</span>
+          </div>
+          <div class="stat-group remaining">
+            <span>Remaining:</span>
+            <span class="stat-val" id="valRemaining">₱35,718</span>
+          </div>
+          <div class="stat-group">
+            <span>Target:</span>
+            <span class="stat-val">₱50,927</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Case Showcase Stage (Pure Blue Atmosphere, No Monitor, No Extra Buttons) -->
+    <div class="case-stage-card">
+      <div class="case-display-frame" title="Coolman Astral M-ATX Case">
+        <span class="case-blue-glow" aria-hidden="true"></span>
+        <img src="images/case_transparent.png" alt="Coolman Astral M-ATX Case" class="case-img-layer">
+      </div>
+      <div class="case-caption">Coolman Astral M-ATX Chassis</div>
+      <div class="case-sub-caption">White Edition • Dual Panoramic Tempered Glass</div>
+    </div>
+
+    <!-- Filter & Reset Toolbar (No Crown Jewel Tab) -->
+    <div class="filter-toolbar">
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-filter="all">All Parts (6)</button>
+        <button class="filter-tab" data-filter="purchased">Purchased (2)</button>
+        <button class="filter-tab" data-filter="pending">Pending (4)</button>
+      </div>
+      <div class="reset-link" id="resetDefaultsBtn" title="Reset back to default purchases (CPU & Motherboard)">
+        Reset to Default List
+      </div>
+    </div>
+
+    <!-- Component Cards List -->
+    <div class="components-container" id="componentsList">
+
+      <!-- 1. CPU -->
+      <article class="comp-card purchased" data-id="cpu" data-status="purchased" data-price="9304">
+        <div class="comp-img-box" onclick="openModal('cpu')" title="Inspect CPU">
+          <img src="images/cpu_transparent.png" alt="AMD Ryzen 7 5700X">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Processor</span>
+            <span class="status-badge done">DONE PURCHASE</span>
+          </div>
+          <h3 class="comp-name">AMD Ryzen 7 5700X</h3>
+          <p class="comp-specs">8 Cores, 16 Threads • Up to 4.6GHz Boost • 32MB L3 Cache • Zen 3 Architecture • 65W TDP • Socket AM4</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Architecture:</strong> TSMC 7nm FinFET Zen 3<br>
+            <strong>Base / Boost Clock:</strong> 3.4 GHz / 4.6 GHz<br>
+            <strong>Socket:</strong> AM4 (Full PCIe 4.0 support)<br>
+            <strong>Memory:</strong> Dual-channel DDR4 up to 3200+ MHz<br>
+            <strong>Purchase Date:</strong> 2026.09.27
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱9,304</div>
+            <div class="price-date">Purchased 2026.09.27</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/AMD-Ryzen-7-5700X-8-Cores-16-Threads-Up-to-4.6GHz-Zen-3-65W-AM4-Gaming-CPU-itw-i.89762129.21616272546" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('cpu')">
+              <span>Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. MOTHERBOARD -->
+      <article class="comp-card purchased" data-id="motherboard" data-status="purchased" data-price="5905">
+        <div class="comp-img-box" onclick="openModal('motherboard')" title="Inspect Motherboard">
+          <img src="images/motherboard_transparent.png" alt="ASRock B550M Pro RS">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Motherboard</span>
+            <span class="status-badge done">DONE PURCHASE</span>
+          </div>
+          <h3 class="comp-name">ASRock B550M Pro RS</h3>
+          <p class="comp-specs">AMD B550 Chipset • Micro ATX Form Factor • 4x DDR4 DIMM Slots (Up to 4733+ MHz OC) • PCIe 4.0 x16 • Dual M.2 • White/Silver Theme</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Form Factor:</strong> Micro ATX (Fits perfectly in Coolman Astral)<br>
+            <strong>Socket:</strong> AM4 (Native Ryzen 5000 Ready)<br>
+            <strong>Storage:</strong> 1x Hyper M.2 (PCIe Gen4 x4) + 1x Ultra M.2 (PCIe Gen3 x2 & SATA3)<br>
+            <strong>Audio:</strong> Realtek ALC892/897 7.1 CH HD Audio with Nahimic<br>
+            <strong>Purchase Date:</strong> 2026.09.27
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱5,905</div>
+            <div class="price-date">Purchased 2026.09.27</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Asrock-B550M-Pro-RS-DDR4-AM4-Socket-Micro-ATX-Motherboard-i.124930893.51255236137" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('motherboard')">
+              <span>Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. CASE -->
+      <article class="comp-card" data-id="case" data-status="pending" data-price="3115">
+        <div class="comp-img-box" onclick="openModal('case')" title="Inspect Case">
+          <img src="images/case_transparent.png" alt="Coolman Astral M-ATX Case">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Chassis</span>
+            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+          </div>
+          <h3 class="comp-name">Coolman Astral M-ATX PC Case</h3>
+          <p class="comp-specs">Digital Screen Display • Panoramic Dual Tempered Glass Panels • Supports up to 9 Fans • 460mm GPU Clearance • White Edition</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Digital Screen:</strong> Built-in LCD screen for temperature & system stats<br>
+            <strong>GPU Clearance:</strong> Up to 460mm (Ample room for triple-fan RTX 5060 Aero)<br>
+            <strong>CPU Cooler Clearance:</strong> Up to 170mm<br>
+            <strong>Fan Capacity:</strong> Up to 9x 120mm fans (Top, Side, Shroud, Rear)<br>
+            <strong>Dimensions:</strong> 495 x 225 x 445 mm
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱3,115</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Coolman-Astral-M-ATX-PC-Case-with-Digital-Screen-Display-(Black-White)-i.21380649.46663991112" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('case')">
+              <span>Mark as Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4. POWER SUPPLY -->
+      <article class="comp-card" data-id="psu" data-status="pending" data-price="3124">
+        <div class="comp-img-box" onclick="openModal('psu')" title="Inspect PSU">
+          <img src="images/psu_transparent.png" alt="Gigabyte P650SS ICE Power Supply">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Power Supply</span>
+            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+          </div>
+          <h3 class="comp-name">Gigabyte P650SS ICE 650W</h3>
+          <p class="comp-specs">80 Plus Silver Certified • Pure Ice White Aesthetic & Flat Cables • 120mm Fluid Dynamic Bearing (FDB) Fan • Industrial-Grade Circuit Protections</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Wattage:</strong> 650 Watts continuous output<br>
+            <strong>Efficiency:</strong> 80 PLUS Silver Certified (>88% efficiency)<br>
+            <strong>Fan Type:</strong> 120mm Fluid Dynamic Bearing with silent PWM curve<br>
+            <strong>Cables:</strong> Clean embossed white flat ribbons for seamless cable management<br>
+            <strong>Safety Protections:</strong> OVP, OPP, SCP, UVP, OCP, OTP
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱3,124</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Gigabyte-P650SS-ICE-650W-80Plus-Silver-Fluid-Dynamic-Bearing-Power-Supply-Unit-GP-P650SS-ICE-itw-i.89762129.28075713859?xptdk=47b8c625-e0ae-4672-9d70-ac3b9e12cf51" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('psu')">
+              <span>Mark as Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. COOLER -->
+      <article class="comp-card" data-id="cooler" data-status="pending" data-price="3984">
+        <div class="comp-img-box" onclick="openModal('cooler')" title="Inspect Cooler">
+          <img src="images/cooler_transparent.png" alt="Jungle Leopard AstroBeat Digital AIO Cooler">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">CPU Cooling</span>
+            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+          </div>
+          <h3 class="comp-name">Jungle Leopard AstroBeat Digital AIO</h3>
+          <p class="comp-specs">Digital Real-Time Temp Display on Pump • 5V 3-Pin ARGB Motherboard Sync • High-Density Aluminum Radiator • Micro-Skived Pure Copper Coldplate</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Pump Head:</strong> Real-time digital temperature readout<br>
+            <strong>Radiator:</strong> 240mm / 360mm high-efficiency liquid radiator<br>
+            <strong>Fans:</strong> Dual ARGB PWM fans (600 - 2000 RPM)<br>
+            <strong>Socket Compatibility:</strong> AMD AM4, AM5 & Intel LGA1700/1200/115X<br>
+            <strong>Tubing:</strong> Braided leak-resistant high-flex tubing
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱3,984</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Jungle-Leopard-AstroBeat-Digital-CPU-Aio-Cooler-240mm-360mm-5V-3PIN-ARGB-Mobo-Sync-CPU-Liquid-Cooler-For-Intel-LGA1155-LAG1200-LGA1700-AMD-AM5-AM4-i.1063503159.27316109200?xptdk=c556c904-8433-4f1a-b4cc-dfcaf535e153" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('cooler')">
+              <span>Mark as Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6. GPU -->
+      <article class="comp-card" data-id="gpu" data-status="pending" data-price="25495">
+        <div class="comp-img-box" onclick="openModal('gpu')" title="Inspect GPU">
+          <img src="images/gpu_transparent.png" alt="Gigabyte GeForce RTX 5060 Aero OC Graphics Card">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Graphics Card</span>
+            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+          </div>
+          <h3 class="comp-name">Gigabyte GeForce RTX 5060 AERO OC 8GB GDDR7</h3>
+          <p class="comp-specs">Next-Gen NVIDIA Blackwell Architecture • DLSS 4 & Ray Tracing • 8GB GDDR7 128-bit (28 Gbps) • WINDFORCE Hawk Fan Cooling System • Server-Grade Thermal Gel • Ice-White Aero Aesthetic</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Architecture:</strong> NVIDIA Blackwell with DLSS 4 Neural Rendering<br>
+            <strong>Core Clock:</strong> 2595 MHz OC (Reference: 2497 MHz)<br>
+            <strong>CUDA Cores:</strong> 3840 Cores<br>
+            <strong>Memory:</strong> 8 GB GDDR7 @ 28 Gbps (128-bit bus)<br>
+            <strong>Cooling:</strong> WINDFORCE Hawk Fan System with alternate spinning & server-grade thermal gel<br>
+            <strong>Card Dimensions:</strong> L=281mm W=117mm H=40mm (Fits comfortably in Astral case)<br>
+            <strong>Power:</strong> 8-pin connector, Recommended PSU: 500W+ (Matched with 650W Gigabyte ICE)<br>
+            <strong>Share of Build:</strong> ₱25,495 (50.06% of total budget)
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount" style="color: #1d4ed8;">₱25,495</div>
+            <div class="price-date" style="color: #1d4ed8;">50.1% of Total Build</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://ecommerce.datablitz.com.ph/products/gigabyte-geforce-rtx-5060-aero-oc-8gb-gddr7-graphics-card" target="_blank" rel="noopener" class="store-link-btn">
+              <span>DataBlitz</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('gpu')">
+              <span>Mark as Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- High-Res Transparent Image Modal -->
+<div class="modal-overlay" id="imageModal" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img id="modalImg" src="" alt="Part Preview" class="modal-img">
+    <h3 id="modalTitle" class="modal-title">Component Name</h3>
+    <div id="modalPrice" class="modal-price">₱0</div>
+    <p id="modalDesc" class="modal-desc">Description</p>
+    <a id="modalStoreLink" href="#" target="_blank" rel="noopener" class="modal-store-link">
+      <span>Open Retailer Store</span>
+    </a>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var isFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+  /* ---------- Sound System (Web Audio API Synthesizer) ---------- */
+  var audioCtx = null;
+  var soundEnabled = true;
+
+  function getAudioCtx(){
+    if(!soundEnabled) return null;
+    if(!audioCtx && (window.AudioContext || window.webkitAudioContext)){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(audioCtx && audioCtx.state === "suspended"){
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playPop(freq){
+    try {
+      var ctx = getAudioCtx();
+      if(!ctx) return;
+      var f = freq || 520;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(f, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(f * 1.6, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.13);
+    } catch(e){}
+  }
+
+  function playChime(){
+    try {
+      var ctx = getAudioCtx();
+      if(!ctx) return;
+      var notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach(function(freq, i){
+        setTimeout(function(){
+          try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.12, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.65);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.7);
+          } catch(e){}
+        }, i * 75);
+      });
+    } catch(e){}
+  }
+
+  /* Audio Toggle Button (No Emojis) */
+  var audioBtn = document.getElementById("audioToggleBtn");
+  var soundLabel = document.getElementById("soundLabel");
+  audioBtn.addEventListener("click", function(){
+    soundEnabled = !soundEnabled;
+    if(soundEnabled){
+      soundLabel.textContent = "Sound: On";
+      playPop(660);
+    } else {
+      soundLabel.textContent = "Sound: Off";
+    }
+  });
+
+  /* ---------- Draggable Background Clouds ---------- */
+  var field = document.getElementById("cloudField");
+  var cloudSVG = function(scale, opacity){
+    return '<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<ellipse cx="60" cy="60" rx="46" ry="30" fill="#fff" opacity="'+opacity+'"/>' +
+      '<ellipse cx="110" cy="46" rx="54" ry="36" fill="#fff" opacity="'+opacity+'"/>' +
+      '<ellipse cx="150" cy="62" rx="38" ry="26" fill="#fff" opacity="'+opacity+'"/>' +
+      '</svg>';
+  };
+
+  var cloudConfigs = [
+    {w:160, top:"6%",  left:"-8%", dur:48, opacity:0.92},
+    {w:120, top:"16%", left:"64%", dur:58, opacity:0.75},
+    {w:195, top:"28%", left:"-14%", dur:72, opacity:0.85},
+    {w:95,  top:"4%",  left:"78%", dur:36, opacity:0.6},
+    {w:140, top:"48%", left:"72%", dur:52, opacity:0.7},
+    {w:170, top:"65%", left:"-10%", dur:68, opacity:0.55}
+  ];
+
+  cloudConfigs.forEach(function(cfg, i){
+    var el = document.createElement("div");
+    el.className = "cloud" + (reduceMotion ? "" : " drifting");
+    el.style.width = cfg.w + "px";
+    el.style.top = cfg.top;
+    el.style.left = cfg.left;
+    if(!reduceMotion){
+      el.style.animationDuration = cfg.dur + "s";
+      el.style.animationDirection = (i % 2 === 0) ? "alternate" : "alternate-reverse";
+    }
+    el.innerHTML = cloudSVG(1, cfg.opacity);
+    field.appendChild(el);
+    makeDraggable(el);
+  });
+
+  // Stars
+  for(var s=0; s<18; s++){
+    var star = document.createElement("div");
+    star.className = "star";
+    star.style.left = (Math.random()*100) + "%";
+    star.style.top = (Math.random()*28) + "%";
+    star.style.animationDelay = (Math.random()*6) + "s";
+    field.appendChild(star);
+  }
+
+  function makeDraggable(el){
+    var dragging = false, startX, startY, baseX = 0, baseY = 0, curX = 0, curY = 0;
+
+    function pointerDown(e){
+      dragging = true;
+      el.style.animationPlayState = "paused";
+      var p = (e.touches && e.touches[0]) ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : {x:e.clientX, y:e.clientY};
+      startX = p.x; startY = p.y;
+      el.setPointerCapture && e.pointerId != null && el.setPointerCapture(e.pointerId);
+    }
+    function pointerMove(e){
+      if(!dragging) return;
+      var p = (e.touches && e.touches[0]) ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : {x:e.clientX, y:e.clientY};
+      curX = baseX + (p.x - startX);
+      curY = baseY + (p.y - startY);
+      el.style.transform = "translate(" + curX + "px," + curY + "px)";
+    }
+    function pointerUp(){
+      if(!dragging) return;
+      dragging = false;
+      baseX = curX; baseY = curY;
+      setTimeout(function(){
+        el.style.transition = "transform 1.8s cubic-bezier(.22,1,.36,1)";
+        el.style.transform = "translate(0,0)";
+        baseX = 0; baseY = 0;
+        setTimeout(function(){
+          el.style.transition = "";
+          el.style.animationPlayState = "running";
+        }, 1850);
+      }, 200);
+    }
+
+    el.addEventListener("pointerdown", pointerDown);
+    window.addEventListener("pointermove", pointerMove);
+    window.addEventListener("pointerup", pointerUp);
+  }
+
+  /* ---------- Geometric Light Dots Particle System (No Emojis) ---------- */
+  function spawnLightDots(originX, originY, count){
+    if(reduceMotion) return;
+    var n = count || 10;
+    for(var i=0; i<n; i++){
+      (function(idx){
+        var el = document.createElement("div");
+        el.className = "sparkle-dot";
+        el.style.left = originX + "px";
+        el.style.top = originY + "px";
+        document.body.appendChild(el);
+
+        var angle = (Math.PI * 2 * idx) / n + (Math.random() * 0.4 - 0.2);
+        var dist = 40 + Math.random() * 55;
+        var dx = Math.cos(angle) * dist;
+        var dy = Math.sin(angle) * dist - 15;
+
+        requestAnimationFrame(function(){
+          el.style.transition = "transform 0.75s cubic-bezier(.22,1,.36,1), opacity 0.7s ease";
+          el.style.transform = "translate(" + dx + "px," + dy + "px) scale(" + (0.8 + Math.random()*0.8) + ")";
+          el.style.opacity = "1";
+          setTimeout(function(){ el.style.opacity = "0"; }, 450);
+        });
+        setTimeout(function(){ el.remove(); }, 850);
+      })(i);
+    }
+  }
+
+  /* ---------- Cinnamoroll Interaction ---------- */
+  var companion = document.getElementById("companion");
+  companion.addEventListener("click", function(){
+    companion.classList.remove("wag");
+    void companion.offsetWidth;
+    companion.classList.add("wag");
+    playPop(784);
+    var rect = companion.getBoundingClientRect();
+    spawnLightDots(rect.left + rect.width/2, rect.top + 20, 8);
+  });
+
+  if(isFinePointer && !reduceMotion){
+    window.addEventListener("pointermove", function(e){
+      var rect = companion.getBoundingClientRect();
+      var cx = rect.left + rect.width/2;
+      var cy = rect.top + rect.height/2;
+      var dx = (e.clientX - cx) / window.innerWidth;
+      companion.style.transform = "rotate(" + (dx * 5) + "deg)";
+    });
+  }
+
+  /* ---------- Parts Data & State Management ---------- */
+  var PARTS = {
+    cpu: {
+      name: "AMD Ryzen 7 5700X",
+      price: 9304,
+      defaultStatus: true,
+      purchasedDate: "2026.09.27",
+      img: "images/cpu_transparent.png",
+      url: "https://shopee.ph/AMD-Ryzen-7-5700X-8-Cores-16-Threads-Up-to-4.6GHz-Zen-3-65W-AM4-Gaming-CPU-itw-i.89762129.21616272546",
+      desc: "8 Cores, 16 Threads, Zen 3 Architecture AM4 Processor with up to 4.6GHz boost clock and 65W low TDP."
+    },
+    motherboard: {
+      name: "ASRock B550M Pro RS",
+      price: 5905,
+      defaultStatus: true,
+      purchasedDate: "2026.09.27",
+      img: "images/motherboard_transparent.png",
+      url: "https://shopee.ph/Asrock-B550M-Pro-RS-DDR4-AM4-Socket-Micro-ATX-Motherboard-i.124930893.51255236137",
+      desc: "Micro ATX AM4 Motherboard with 4x DDR4 slots, PCIe 4.0 x16, Dual M.2, and clean silver-white heatsinks."
+    },
+    case: {
+      name: "Coolman Astral M-ATX PC Case",
+      price: 3115,
+      defaultStatus: false,
+      purchasedDate: null,
+      img: "images/case_transparent.png",
+      url: "https://shopee.ph/Coolman-Astral-M-ATX-PC-Case-with-Digital-Screen-Display-(Black-White)-i.21380649.46663991112",
+      desc: "Micro-ATX Panoramic Tempered Glass Case equipped with an integrated real-time digital screen for system stats."
+    },
+    psu: {
+      name: "Gigabyte P650SS ICE 650W",
+      price: 3124,
+      defaultStatus: false,
+      purchasedDate: null,
+      img: "images/psu_transparent.png",
+      url: "https://shopee.ph/Gigabyte-P650SS-ICE-650W-80Plus-Silver-Fluid-Dynamic-Bearing-Power-Supply-Unit-GP-P650SS-ICE-itw-i.89762129.28075713859?xptdk=47b8c625-e0ae-4672-9d70-ac3b9e12cf51",
+      desc: "80 Plus Silver certified 650W power supply featuring a pure ice-white casing, flat white cables, and 120mm FDB fan."
+    },
+    cooler: {
+      name: "Jungle Leopard AstroBeat Digital AIO",
+      price: 3984,
+      defaultStatus: false,
+      purchasedDate: null,
+      img: "images/cooler_transparent.png",
+      url: "https://shopee.ph/Jungle-Leopard-AstroBeat-Digital-CPU-Aio-Cooler-240mm-360mm-5V-3PIN-ARGB-Mobo-Sync-CPU-Liquid-Cooler-For-Intel-LGA1155-LAG1200-LGA1700-AMD-AM5-AM4-i.1063503159.27316109200?xptdk=c556c904-8433-4f1a-b4cc-dfcaf535e153",
+      desc: "High-performance liquid CPU cooler featuring a pump cap digital display for live CPU temperatures and 5V ARGB lighting."
+    },
+    gpu: {
+      name: "Gigabyte GeForce RTX 5060 AERO OC 8GB GDDR7",
+      price: 25495,
+      defaultStatus: false,
+      purchasedDate: null,
+      img: "images/gpu_transparent.png",
+      url: "https://ecommerce.datablitz.com.ph/products/gigabyte-geforce-rtx-5060-aero-oc-8gb-gddr7-graphics-card",
+      desc: "Powered by NVIDIA Blackwell architecture, 8GB ultra-fast GDDR7 memory, DLSS 4, and Aero ice-white triple fans."
+    }
+  };
+
+  var TOTAL_TARGET = 50927;
+  var userState = {};
+
+  function loadState(){
+    try {
+      var saved = localStorage.getItem("zz_pc_goal_state_v2");
+      if(saved){
+        userState = JSON.parse(saved);
+      } else {
+        resetToDefaultState();
+      }
+    } catch(e){
+      resetToDefaultState();
+    }
+  }
+
+  function saveState(){
+    try {
+      localStorage.setItem("zz_pc_goal_state_v2", JSON.stringify(userState));
+    } catch(e){}
+  }
+
+  function resetToDefaultState(){
+    userState = {};
+    for(var k in PARTS){
+      userState[k] = PARTS[k].defaultStatus;
+    }
+    saveState();
+  }
+
+  loadState();
+
+  /* Update UI and Recalculate Metrics */
+  function updateDashboard(){
+    var spent = 0;
+    var count = 0;
+    var totalParts = Object.keys(PARTS).length;
+
+    for(var id in PARTS){
+      var isPurchased = !!userState[id];
+      var card = document.querySelector('.comp-card[data-id="'+id+'"]');
+      if(isPurchased){
+        spent += PARTS[id].price;
+        count++;
+        if(card){
+          card.classList.add("purchased");
+          var badge = card.querySelector(".status-badge");
+          if(badge){
+            badge.className = "status-badge done";
+            badge.textContent = "DONE PURCHASE";
+          }
+          var btn = card.querySelector(".toggle-status-btn");
+          if(btn) btn.innerHTML = "<span>Purchased</span>";
+        }
+      } else {
+        if(card){
+          card.classList.remove("purchased");
+          var badge = card.querySelector(".status-badge");
+          if(badge){
+            badge.className = "status-badge pending";
+            badge.textContent = "HAVE NOT PURCHASED";
+          }
+          var btn = card.querySelector(".toggle-status-btn");
+          if(btn) btn.innerHTML = "<span>Mark as Purchased</span>";
+        }
+      }
+    }
+
+    var remaining = TOTAL_TARGET - spent;
+    var percentage = (spent / TOTAL_TARGET) * 100;
+    var roundedPercent = percentage.toFixed(1);
+
+    // Update Sticky HUD
+    var percentEl = document.getElementById("percentNumber");
+    var progressFill = document.getElementById("progressFillBar");
+    var valSpent = document.getElementById("valSpent");
+    var valRemaining = document.getElementById("valRemaining");
+    var securedCount = document.getElementById("securedCount");
+
+    percentEl.textContent = roundedPercent;
+    progressFill.style.width = Math.min(100, Math.max(0, percentage)) + "%";
+    valSpent.textContent = "₱" + spent.toLocaleString("en-US");
+    valRemaining.textContent = "₱" + Math.max(0, remaining).toLocaleString("en-US");
+    securedCount.textContent = count + " of " + totalParts + " Purchased";
+  }
+
+  // Toggle Part function exposed globally
+  window.togglePart = function(id){
+    userState[id] = !userState[id];
+    saveState();
+    updateDashboard();
+
+    var card = document.querySelector('.comp-card[data-id="'+id+'"]');
+    var rect = card ? card.getBoundingClientRect() : {left: window.innerWidth/2, top: window.innerHeight/2, width: 0, height: 0};
+    var x = rect.left + rect.width/2;
+    var y = rect.top + rect.height/2;
+
+    if(userState[id]){
+      playChime();
+      spawnLightDots(x, y, 12);
+    } else {
+      playPop(440);
+      spawnLightDots(x, y, 6);
+    }
+  };
+
+  // Reset to default list
+  document.getElementById("resetDefaultsBtn").addEventListener("click", function(){
+    resetToDefaultState();
+    updateDashboard();
+    playPop(520);
+    spawnLightDots(window.innerWidth/2, window.innerHeight/2, 10);
+  });
+
+  // Filter Toolbar Tabs
+  var filterTabs = document.querySelectorAll(".filter-tab");
+  filterTabs.forEach(function(tab){
+    tab.addEventListener("click", function(){
+      filterTabs.forEach(function(t){ t.classList.remove("active"); });
+      tab.classList.add("active");
+      playPop(620);
+
+      var filter = tab.getAttribute("data-filter");
+      var cards = document.querySelectorAll(".comp-card");
+
+      cards.forEach(function(card){
+        var id = card.getAttribute("data-id");
+        var isPurchased = !!userState[id];
+
+        if(filter === "all"){
+          card.style.display = "grid";
+        } else if(filter === "purchased"){
+          card.style.display = isPurchased ? "grid" : "none";
+        } else if(filter === "pending"){
+          card.style.display = !isPurchased ? "grid" : "none";
+        }
+      });
+    });
+  });
+
+  // Expandable Specs Drawers
+  window.toggleDrawer = function(btn){
+    var drawer = btn.parentElement.querySelector(".specs-drawer");
+    if(drawer){
+      drawer.classList.toggle("open");
+      var isOpen = drawer.classList.contains("open");
+      btn.querySelector("span").textContent = isOpen ? "Hide Technical Details" : "View Technical Details";
+      playPop(580);
+    }
+  };
+
+  /* ---------- Image Lightbox Modal ---------- */
+  var modal = document.getElementById("imageModal");
+  var modalImg = document.getElementById("modalImg");
+  var modalTitle = document.getElementById("modalTitle");
+  var modalPrice = document.getElementById("modalPrice");
+  var modalDesc = document.getElementById("modalDesc");
+  var modalStoreLink = document.getElementById("modalStoreLink");
+
+  window.openModal = function(id){
+    var part = PARTS[id];
+    if(!part) return;
+    modalImg.src = part.img;
+    modalTitle.textContent = part.name;
+    modalPrice.textContent = "₱" + part.price.toLocaleString("en-US");
+    modalDesc.textContent = part.desc;
+    modalStoreLink.href = part.url;
+    modalStoreLink.innerHTML = "<span>Open " + (part.url.indexOf("datablitz") !== -1 ? "DataBlitz" : "Shopee") + " Store</span>";
+
+    modal.classList.add("open");
+    playPop(640);
+  };
+
+  window.closeModal = function(){
+    modal.classList.remove("open");
+    playPop(480);
+  };
+
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && modal.classList.contains("open")){
+      closeModal();
+    }
+  });
+
+  /* ---------- Cursor Trail for Fine Pointers ---------- */
+  if(isFinePointer && !reduceMotion){
+    var dots = [];
+    var maxDots = 6;
+    var lastTime = 0;
+
+    window.addEventListener("pointermove", function(e){
+      var now = Date.now();
+      if(now - lastTime < 35) return;
+      lastTime = now;
+
+      var dot = document.createElement("div");
+      dot.className = "trail-dot";
+      dot.style.left = e.clientX + "px";
+      dot.style.top = e.clientY + "px";
+      document.body.appendChild(dot);
+      dots.push(dot);
+
+      requestAnimationFrame(function(){
+        dot.style.transition = "transform .6s ease, opacity .6s ease";
+        dot.style.transform = "translate(-50%,-50%) scale(0.2)";
+        dot.style.opacity = "0";
+      });
+
+      setTimeout(function(){
+        dot.remove();
+        dots.shift();
+      }, 600);
+
+      if(dots.length > maxDots){
+        var old = dots.shift();
+        if(old) old.remove();
+      }
+    });
+  }
+
+  // Initial dashboard calculation
+  updateDashboard();
+
+})();
+</script>
+</body>
+</html>
