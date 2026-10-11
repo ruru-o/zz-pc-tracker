@@ -17,8 +17,10 @@
     --ink: #3a5a85;
     --ink-strong: #2c4568;
     --cloud-shadow: rgba(95, 132, 184, 0.28);
-    --blue-accent: #3b82f6;
-    --blue-glow: rgba(59, 130, 246, 0.4);
+    --cute-pink: #fbcfe8;
+    --cute-pink-deep: #f472b6;
+    --cute-blue: #60a5fa;
+    --cute-mint: #34d399;
     --radius-xl: 28px;
     --radius-lg: 20px;
     --radius-md: 14px;
@@ -72,7 +74,7 @@
     text-decoration: none;
   }
 
-  /* ---------- background scene (clouds & stars) ---------- */
+  /* ---------- background sky & floating clouds ---------- */
 
   .sky{
     position: fixed;
@@ -90,7 +92,7 @@
     width:125vmax;
     height:125vmax;
     transform: translateX(-50%);
-    background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.6), rgba(255,255,255,0) 48%);
+    background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.65), rgba(255,255,255,0) 48%);
   }
 
   .star{
@@ -99,11 +101,11 @@
     background: #fff;
     border-radius: 50%;
     opacity: .0;
-    animation: twinkle 6s ease-in-out infinite;
+    animation: twinkle 5s ease-in-out infinite;
   }
   @keyframes twinkle{
     0%,100%{ opacity:.15; transform: scale(.8);}
-    50%{ opacity:.75; transform: scale(1.25); filter: drop-shadow(0 0 4px #fff);}
+    50%{ opacity:.85; transform: scale(1.3); filter: drop-shadow(0 0 5px #fff);}
   }
 
   .cloud-field{
@@ -139,10 +141,10 @@
   }
 
   .glass-pill-btn{
-    background: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.88);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255,255,255,0.95);
+    border: 1.5px solid #ffffff;
     border-radius: 30px;
     padding: 7px 16px;
     font-family: inherit;
@@ -156,7 +158,7 @@
     transition: all 0.3s var(--ease-soft);
   }
   .glass-pill-btn:hover{
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.03);
     background: #ffffff;
     box-shadow: 0 8px 22px rgba(95,132,184,0.32);
   }
@@ -170,7 +172,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px 18px 80px;
+    padding: 24px 18px 80px;
   }
 
   .scene-wrap{
@@ -181,58 +183,83 @@
     align-items: center;
   }
 
-  /* ---------- companion (Cinnamoroll - Clean) ---------- */
+  /* ---------- cute animated Cinnamoroll companion ---------- */
 
   .companion-section{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .companion-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
   }
 
   .companion{
-    width: 130px;
-    height: 130px;
+    width: 140px;
+    height: 140px;
     position: relative;
     transform: translateZ(0);
     cursor: pointer;
-    filter: drop-shadow(0 8px 16px rgba(95,132,184,0.28));
-    transition: transform 0.4s var(--ease-spring);
+    filter: drop-shadow(0 10px 18px rgba(95,132,184,0.28));
+    animation: companion-float 4.2s ease-in-out infinite;
+    transition: transform 0.3s var(--ease-spring);
   }
+  @keyframes companion-float{
+    0%, 100%{ transform: translateY(0); }
+    50%{ transform: translateY(-7px); }
+  }
+
   .companion:hover{
-    transform: scale(1.06);
+    transform: scale(1.08) translateY(-4px);
   }
   .companion:active{
-    transform: scale(0.96);
+    transform: scale(0.95);
   }
 
   .companion svg{ width:100%; height:100%; overflow:visible; }
 
-  .ear{ transform-origin: 50% 90%; transition: transform .5s var(--ease-soft); }
-  .companion:hover .ear-l{ transform: rotate(-16deg); }
-  .companion:hover .ear-r{ transform: rotate(16deg); }
+  .ear{ transform-origin: 50% 90%; transition: transform .45s var(--ease-spring); }
+  .companion:hover .ear-l{ transform: rotate(-18deg); }
+  .companion:hover .ear-r{ transform: rotate(18deg); }
 
   .tail{ transform-origin: 30% 70%; }
-  .companion.wag .tail{ animation: wag 0.6s ease-in-out 3; }
+  .companion.wag .tail{ animation: wag 0.5s ease-in-out 3; }
   @keyframes wag{
     0%,100%{ transform: rotate(0deg); }
-    50%{ transform: rotate(22deg); }
+    50%{ transform: rotate(26deg); }
   }
 
-  .blink{ animation: blink 5.5s infinite; }
+  .blink{ animation: blink 5s infinite; }
   @keyframes blink{
     0%, 92%, 100%{ transform: scaleY(1); }
     95%{ transform: scaleY(0.1); }
   }
 
-  .cheek{ opacity: .65; transition: opacity .3s ease; }
-  .companion:hover .cheek{ opacity: .95; }
+  .happy-eyes{ display: none; }
+  .companion.happy .regular-eyes{ display: none; }
+  .companion.happy .happy-eyes{ display: block; }
+
+  .cheek{
+    opacity: .75;
+    fill: #fbcfe8;
+    transition: opacity .3s ease, fill .3s ease;
+  }
+  .companion:hover .cheek{
+    opacity: 1;
+    fill: #f472b6;
+  }
 
   /* ---------- title ---------- */
 
   .header-group{
     text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
 
   .main-title{
@@ -241,7 +268,7 @@
     line-height: 1.15;
     letter-spacing: -0.5px;
     color: var(--ink-strong);
-    text-shadow: 0 2px 14px rgba(255,255,255,0.8);
+    text-shadow: 0 2px 14px rgba(255,255,255,0.85);
   }
 
   /* ---------- STICKY HIGHLIGHTED PROGRESS BAR HUD ---------- */
@@ -251,12 +278,12 @@
     top: 14px;
     z-index: 100;
     width: 100%;
-    margin-bottom: 26px;
+    margin-bottom: 24px;
   }
 
   .sticky-hud-card{
     width: 100%;
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 2px solid #90b0d8;
@@ -282,12 +309,12 @@
 
   .hud-title-wrap{
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 10px;
   }
 
   .hud-label{
-    font-size: 14px;
+    font-size: 14.5px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -295,15 +322,15 @@
   }
 
   .hud-count{
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--ink);
-    background: var(--sky-mist);
-    padding: 2px 10px;
-    border-radius: 12px;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #065f46;
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    padding: 3px 12px;
+    border-radius: 20px;
   }
 
-  /* Standard Percentage Counter */
   .hud-percentage-wrap{
     display: flex;
     align-items: baseline;
@@ -338,18 +365,18 @@
 
   .hud-bar-fill{
     height: 100%;
-    width: 29.86%; /* Dynamically calculated */
-    background: linear-gradient(90deg, #4677aa 0%, #5f8fb8 40%, #3b82f6 75%, #60a5fa 100%);
+    width: 100%; /* Dynamically calculated */
+    background: linear-gradient(90deg, #4677aa 0%, #3b82f6 50%, #60a5fa 85%, #93c5fd 100%);
     border-radius: 10px;
     position: relative;
     transition: width 0.7s var(--ease-spring);
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.75);
   }
   .hud-bar-fill::after{
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.65) 50%, transparent 100%);
     animation: bar-glimmer 2.4s infinite;
   }
   @keyframes bar-glimmer{
@@ -382,23 +409,23 @@
     color: #1d4ed8;
   }
   .stat-group.remaining .stat-val{
-    color: #b91c1c;
+    color: #059669;
   }
 
-  /* ---------- case showcase stage (pure blue) ---------- */
+  /* ---------- case showcase stage (pure calm blue) ---------- */
 
   .case-stage-card{
     width: 100%;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 2px solid rgba(255,255,255,0.95);
     border-radius: var(--radius-xl);
-    padding: 26px;
+    padding: 24px;
     box-shadow:
       0 18px 45px -10px rgba(95, 132, 184, 0.28),
       inset 0 0 24px rgba(255,255,255,0.9);
-    margin-bottom: 26px;
+    margin-bottom: 24px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -424,7 +451,6 @@
     overflow: hidden;
   }
 
-  /* Static Clean Blue Ambient Aura */
   .case-blue-glow{
     position: absolute;
     inset: -20px;
@@ -448,9 +474,9 @@
   }
 
   .case-caption{
-    margin-top: 14px;
+    margin-top: 12px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--ink-strong);
     text-align: center;
   }
@@ -475,9 +501,9 @@
 
   .filter-tabs{
     display: inline-flex;
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.8);
     backdrop-filter: blur(10px);
-    border: 1.5px solid rgba(255,255,255,0.9);
+    border: 1.5px solid rgba(255,255,255,0.95);
     padding: 4px;
     border-radius: 30px;
     box-shadow: 0 4px 14px rgba(95,132,184,0.15);
@@ -538,13 +564,13 @@
     align-items: center;
     position: relative;
     overflow: hidden;
-    transition: transform 0.35s var(--ease-soft), box-shadow 0.35s var(--ease-soft), border-color 0.3s;
+    transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-soft), border-color 0.3s;
   }
   .comp-card:hover{
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow:
-      0 18px 36px -8px rgba(95, 132, 184, 0.32),
-      0 0 20px rgba(144, 176, 216, 0.35);
+      0 18px 38px -8px rgba(95, 132, 184, 0.32),
+      0 0 22px rgba(144, 176, 216, 0.35);
     border-color: #ffffff;
   }
 
@@ -580,7 +606,7 @@
     transition: transform 0.35s var(--ease-spring), box-shadow 0.3s;
   }
   .comp-img-box:hover{
-    transform: scale(1.04);
+    transform: scale(1.05);
     box-shadow: 0 8px 20px rgba(95,132,184,0.22);
   }
 
@@ -691,7 +717,7 @@
   .specs-drawer{
     grid-column: 1 / -1;
     display: none;
-    background: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.8);
     border-radius: var(--radius-md);
     padding: 12px 16px;
     border: 1px dashed rgba(144, 176, 216, 0.6);
@@ -904,18 +930,18 @@
     transform: translateY(-2px);
   }
 
-  /* ---------- geometric particle dots & cursor trail ---------- */
+  /* ---------- cute floating pastel dots ---------- */
 
   .sparkle-dot{
     position: fixed;
     pointer-events: none;
     z-index: 9999;
     user-select: none;
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: #ffffff;
-    box-shadow: 0 0 8px 2px rgba(127, 227, 255, 0.9);
+    box-shadow: 0 0 10px 2px rgba(127, 227, 255, 0.95);
     will-change: transform, opacity;
   }
 
@@ -958,22 +984,30 @@
 <main>
   <div class="scene-wrap">
 
-    <!-- Clean Cinnamoroll Companion (No text bubble) -->
+    <!-- Cute Cinnamoroll Companion with Personality & Reactions -->
     <div class="companion-section">
-      <div class="companion" id="companion" tabindex="0" role="button" aria-label="Interactive character, click to interact">
-        <svg viewBox="0 0 200 200" aria-hidden="true">
-          <ellipse class="tail" cx="42" cy="150" rx="16" ry="10" fill="#eaf2fb" stroke="#bcd3ee" stroke-width="2"/>
-          <path class="ear ear-l" d="M62 66 C48 40, 52 18, 74 20 C78 40, 74 58, 70 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
-          <path class="ear ear-r" d="M138 66 C152 40, 148 18, 126 20 C122 40, 126 58, 130 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
-          <ellipse cx="100" cy="118" rx="62" ry="54" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
-          <ellipse class="cheek" cx="66" cy="128" rx="9" ry="6" fill="var(--sky-soft)"/>
-          <ellipse class="cheek" cx="134" cy="128" rx="9" ry="6" fill="var(--sky-soft)"/>
-          <g class="blink">
-            <ellipse cx="82" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
-            <ellipse cx="118" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
-          </g>
-          <path d="M92 128 Q100 134 108 128" stroke="var(--ink-strong)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-        </svg>
+      <div class="companion-wrap">
+        <div class="companion" id="companion" tabindex="0" role="button" aria-label="Interactive cloud companion, click to interact">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <ellipse class="tail" cx="42" cy="150" rx="16" ry="10" fill="#eaf2fb" stroke="#bcd3ee" stroke-width="2"/>
+            <path class="ear ear-l" d="M62 66 C48 40, 52 18, 74 20 C78 40, 74 58, 70 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+            <path class="ear ear-r" d="M138 66 C152 40, 148 18, 126 20 C122 40, 126 58, 130 70 Z" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+            <ellipse cx="100" cy="118" rx="62" ry="54" fill="#ffffff" stroke="#bcd3ee" stroke-width="2.5"/>
+            <ellipse class="cheek" cx="66" cy="128" rx="9" ry="6"/>
+            <ellipse class="cheek" cx="134" cy="128" rx="9" ry="6"/>
+            <!-- Regular Eyes -->
+            <g class="regular-eyes blink">
+              <ellipse cx="82" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
+              <ellipse cx="118" cy="112" rx="4.2" ry="6" fill="var(--ink-strong)"/>
+            </g>
+            <!-- Happy Curved Eyes on Click -->
+            <g class="happy-eyes">
+              <path d="M76 114 Q82 106 88 114" stroke="var(--ink-strong)" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M112 114 Q118 106 124 114" stroke="var(--ink-strong)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </g>
+            <path d="M92 128 Q100 134 108 128" stroke="var(--ink-strong)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
       </div>
     </div>
 
@@ -989,18 +1023,18 @@
         <div class="hud-top-row">
           <div class="hud-title-wrap">
             <span class="hud-label">Build Progress</span>
-            <span class="hud-count" id="securedCount">2 of 6 Purchased</span>
+            <span class="hud-count" id="securedCount">10 of 10 Purchased</span>
           </div>
           
           <!-- Standard Percentage Counter -->
           <div class="hud-percentage-wrap">
-            <span class="hud-percent-value" id="percentNumber">29.9</span>
+            <span class="hud-percent-value" id="percentNumber">100.0</span>
             <span class="hud-percent-symbol">%</span>
           </div>
         </div>
 
-        <!-- Highlighted Progress Bar -->
-        <div class="hud-bar-container" role="progressbar" aria-valuenow="29.9" aria-valuemin="0" aria-valuemax="100">
+        <!-- Highlighted High-Visibility Progress Bar -->
+        <div class="hud-bar-container" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
           <div class="hud-bar-fill" id="progressFillBar"></div>
         </div>
 
@@ -1008,22 +1042,22 @@
         <div class="hud-stats-row">
           <div class="stat-group spent">
             <span>Spent:</span>
-            <span class="stat-val" id="valSpent">₱15,209</span>
+            <span class="stat-val" id="valSpent">₱54,945</span>
           </div>
           <div class="stat-group remaining">
             <span>Remaining:</span>
-            <span class="stat-val" id="valRemaining">₱35,718</span>
+            <span class="stat-val" id="valRemaining">₱0</span>
           </div>
           <div class="stat-group">
-            <span>Target:</span>
-            <span class="stat-val">₱50,927</span>
+            <span>Total Target:</span>
+            <span class="stat-val">₱54,945</span>
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- Case Showcase Stage (Pure Blue Atmosphere, No Monitor, No Extra Buttons) -->
+    <!-- Case Showcase Stage (Pure Blue Atmosphere) -->
     <div class="case-stage-card">
       <div class="case-display-frame" title="Coolman Astral M-ATX Case">
         <span class="case-blue-glow" aria-hidden="true"></span>
@@ -1033,19 +1067,19 @@
       <div class="case-sub-caption">White Edition • Dual Panoramic Tempered Glass</div>
     </div>
 
-    <!-- Filter & Reset Toolbar (No Crown Jewel Tab) -->
+    <!-- Filter & Reset Toolbar -->
     <div class="filter-toolbar">
       <div class="filter-tabs" id="filterTabs">
-        <button class="filter-tab active" data-filter="all">All Parts (6)</button>
-        <button class="filter-tab" data-filter="purchased">Purchased (2)</button>
-        <button class="filter-tab" data-filter="pending">Pending (4)</button>
+        <button class="filter-tab active" data-filter="all">All Parts (10)</button>
+        <button class="filter-tab" data-filter="purchased">Purchased (10)</button>
+        <button class="filter-tab" data-filter="pending">Pending (0)</button>
       </div>
-      <div class="reset-link" id="resetDefaultsBtn" title="Reset back to default purchases (CPU & Motherboard)">
-        Reset to Default List
+      <div class="reset-link" id="resetDefaultsBtn" title="Reset all parts to purchased state">
+        Reset to Official Purchases
       </div>
     </div>
 
-    <!-- Component Cards List -->
+    <!-- Component Cards List (All 10 Parts) -->
     <div class="components-container" id="componentsList">
 
       <!-- 1. CPU -->
@@ -1106,7 +1140,7 @@
             <span>View Technical Details</span>
           </button>
           <div class="specs-drawer">
-            <strong>Form Factor:</strong> Micro ATX (Fits perfectly in Coolman Astral)<br>
+            <strong>Form Factor:</strong> Micro ATX (Fits Coolman Astral chassis)<br>
             <strong>Socket:</strong> AM4 (Native Ryzen 5000 Ready)<br>
             <strong>Storage:</strong> 1x Hyper M.2 (PCIe Gen4 x4) + 1x Ultra M.2 (PCIe Gen3 x2 & SATA3)<br>
             <strong>Audio:</strong> Realtek ALC892/897 7.1 CH HD Audio with Nahimic<br>
@@ -1130,8 +1164,131 @@
         </div>
       </article>
 
-      <!-- 3. CASE -->
-      <article class="comp-card" data-id="case" data-status="pending" data-price="3115">
+      <!-- 3. AIO LIQUID COOLER -->
+      <article class="comp-card purchased" data-id="cooler" data-status="purchased" data-price="3300">
+        <div class="comp-img-box" onclick="openModal('cooler')" title="Inspect AIO Cooler">
+          <img src="images/cooler_deepcool_transparent.png" alt="Deepcool LE240 / LE360 V2 ARGB AIO Cooler">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">CPU Liquid Cooler</span>
+            <span class="status-badge done">DONE PURCHASE</span>
+          </div>
+          <h3 class="comp-name">Deepcool LE240 / LE360 V2 ARGB</h3>
+          <p class="comp-specs">Frosted Pump Head with Diffused ARGB Glow • High-Efficiency 3400 RPM Motor • Patented Anti-Leak Technology • 5V 3-Pin ARGB Motherboard Sync</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Pump Motor:</strong> 3-phase, 6-slot, 4-pole motor up to 3400 RPM<br>
+            <strong>Cooling Tech:</strong> Patented Anti-Leak pressure-relief internal valve<br>
+            <strong>Lighting:</strong> 5V 3-Pin ARGB compatible with motherboard software<br>
+            <strong>Socket Support:</strong> AMD AM4, AM5 & Intel LGA1700/1200/115X<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱3,300</div>
+            <div class="price-date">Purchased 10.10</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Deepcool-LE240-V2-LE360-V2-ARGB-CPU-AIO-Cooler-360mm-5V-3PIN-ARGB-Mobo-Lighting-Sync-For-Intel-LGA1155-LGA1200-LGA1700-AMD-AM5-AM4-i.854953902.26377384253" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('cooler')">
+              <span>Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4. GPU -->
+      <article class="comp-card purchased" data-id="gpu" data-status="purchased" data-price="28395">
+        <div class="comp-img-box" onclick="openModal('gpu')" title="Inspect GPU">
+          <img src="images/gpu_msi_ventus.png" alt="MSI RTX 5060 Ti 8GB Ventus 2X White Plus">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Graphics Card</span>
+            <span class="status-badge done">DONE PURCHASE</span>
+          </div>
+          <h3 class="comp-name">MSI GeForce RTX 5060 Ti 8GB GDDR7 Ventus 2X White Plus</h3>
+          <p class="comp-specs">Dual-Fan STORMFORCE Thermal Design • Pure White Aesthetic Edition • 8GB GDDR7 Memory • Zero Frozr Fan-Stop Technology • Reinforced Metal Backplate</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Architecture:</strong> Next-Gen NVIDIA Blackwell with DLSS 4<br>
+            <strong>Memory:</strong> 8 GB GDDR7 ultra-fast VRAM<br>
+            <strong>Cooling:</strong> Dual STORMFORCE fans with Zero Frozr silent idle mode<br>
+            <strong>Colorway:</strong> Ventus White Plus (clean silver-white finish matching build)<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount" style="color: #1d4ed8;">₱28,395</div>
+            <div class="price-date">Purchased 10.10</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/MSI-Geforce-RTX-5060-Ti-8GB-GDDR7-Ventus-2X-White-Plus-Dual-Fans-Graphics-Card-itw-i.89762129.45310302967" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('gpu')">
+              <span>Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. PSU -->
+      <article class="comp-card purchased" data-id="psu" data-status="purchased" data-price="2853">
+        <div class="comp-img-box" onclick="openModal('psu')" title="Inspect PSU">
+          <img src="images/psu_acer.png" alt="Acer Full Modular ATX Power Supply">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Power Supply</span>
+            <span class="status-badge done">DONE PURCHASE</span>
+          </div>
+          <h3 class="comp-name">Acer Full Modular ATX Power Supply</h3>
+          <p class="comp-specs">80 Plus Bronze Certified • 100% Full Modular Cabling • Flat Detachable Cables • DC-DC High-Efficiency Circuit • 120mm Silent Cooling Fan</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Modularity:</strong> 100% Full Modular (Plug only what is needed)<br>
+            <strong>Certification:</strong> 80 PLUS Bronze Certified efficiency<br>
+            <strong>Protection:</strong> OVP, SCP, OPP, UVP industrial-grade circuit protections<br>
+            <strong>Cables:</strong> Clean flat ribbon cables for streamlined routing<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱2,853</div>
+            <div class="price-date">Purchased 10.10</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Acer-Full-Modular-Computer-ATX-Power-Supply-550W-650W-750W-1000W-PSU-Certified-80Plus-Bronze-i.1352712158.26161908712" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('psu')">
+              <span>Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6. CASE -->
+      <article class="comp-card purchased" data-id="case" data-status="purchased" data-price="2680">
         <div class="comp-img-box" onclick="openModal('case')" title="Inspect Case">
           <img src="images/case_transparent.png" alt="Coolman Astral M-ATX Case">
           <span class="zoom-hint">Zoom</span>
@@ -1139,156 +1296,193 @@
         <div class="comp-details">
           <div class="comp-badge-row">
             <span class="part-category">Chassis</span>
-            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+            <span class="status-badge done">DONE PURCHASE</span>
           </div>
           <h3 class="comp-name">Coolman Astral M-ATX PC Case</h3>
-          <p class="comp-specs">Digital Screen Display • Panoramic Dual Tempered Glass Panels • Supports up to 9 Fans • 460mm GPU Clearance • White Edition</p>
+          <p class="comp-specs">Integrated Digital Screen Display • Panoramic Dual Tempered Glass Panels • Supports up to 9 Fans • 460mm GPU Clearance • White Edition</p>
           <button class="specs-expand-btn" onclick="toggleDrawer(this)">
             <span>View Technical Details</span>
           </button>
           <div class="specs-drawer">
             <strong>Digital Screen:</strong> Built-in LCD screen for temperature & system stats<br>
-            <strong>GPU Clearance:</strong> Up to 460mm (Ample room for triple-fan RTX 5060 Aero)<br>
-            <strong>CPU Cooler Clearance:</strong> Up to 170mm<br>
-            <strong>Fan Capacity:</strong> Up to 9x 120mm fans (Top, Side, Shroud, Rear)<br>
-            <strong>Dimensions:</strong> 495 x 225 x 445 mm
+            <strong>GPU Clearance:</strong> Up to 460mm (Room for high-end cards)<br>
+            <strong>Cooling Support:</strong> Up to 9x 120mm fans<br>
+            <strong>Form Factor:</strong> Micro ATX / Mini ITX<br>
+            <strong>Purchase Date:</strong> 10.10 Sale (₱2,680)
           </div>
         </div>
         <div class="comp-actions">
           <div class="price-tag">
             <div class="price-label">Price</div>
-            <div class="price-amount">₱3,115</div>
+            <div class="price-amount">₱2,680</div>
+            <div class="price-date">Purchased 10.10</div>
           </div>
           <div class="action-btn-group">
-            <a href="https://shopee.ph/Coolman-Astral-M-ATX-PC-Case-with-Digital-Screen-Display-(Black-White)-i.21380649.46663991112" target="_blank" rel="noopener" class="store-link-btn">
-              <span>Shopee</span>
+            <a href="https://shopee.ph/user/purchase/order/245335745214786?type=7" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee Order</span>
             </a>
             <button class="toggle-status-btn" onclick="togglePart('case')">
-              <span>Mark as Purchased</span>
+              <span>Purchased</span>
             </button>
           </div>
         </div>
       </article>
 
-      <!-- 4. POWER SUPPLY -->
-      <article class="comp-card" data-id="psu" data-status="pending" data-price="3124">
-        <div class="comp-img-box" onclick="openModal('psu')" title="Inspect PSU">
-          <img src="images/psu_transparent.png" alt="Gigabyte P650SS ICE Power Supply">
+      <!-- 7. 8-PIN ARGB EXTENSION CABLE -->
+      <article class="comp-card purchased" data-id="ext8pin" data-status="purchased" data-price="430">
+        <div class="comp-img-box" onclick="openModal('ext8pin')" title="Inspect 8-Pin ARGB Cable">
+          <img src="images/cable_argb_transparent.png" alt="Jungle Leopard 8-Pin ARGB Neon Cable">
           <span class="zoom-hint">Zoom</span>
         </div>
         <div class="comp-details">
           <div class="comp-badge-row">
-            <span class="part-category">Power Supply</span>
-            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+            <span class="part-category">Aesthetic Mod</span>
+            <span class="status-badge done">DONE PURCHASE</span>
           </div>
-          <h3 class="comp-name">Gigabyte P650SS ICE 650W</h3>
-          <p class="comp-specs">80 Plus Silver Certified • Pure Ice White Aesthetic & Flat Cables • 120mm Fluid Dynamic Bearing (FDB) Fan • Industrial-Grade Circuit Protections</p>
+          <h3 class="comp-name">1x Jungle Leopard 8-Pin ARGB Neon Cable</h3>
+          <p class="comp-specs">Silicone Neon Light Strip Extension for GPU Power • 5V 3-Pin ARGB Motherboard Lighting Sync • High-Density Diffusion • White/Silver Trim</p>
           <button class="specs-expand-btn" onclick="toggleDrawer(this)">
             <span>View Technical Details</span>
           </button>
           <div class="specs-drawer">
-            <strong>Wattage:</strong> 650 Watts continuous output<br>
-            <strong>Efficiency:</strong> 80 PLUS Silver Certified (>88% efficiency)<br>
-            <strong>Fan Type:</strong> 120mm Fluid Dynamic Bearing with silent PWM curve<br>
-            <strong>Cables:</strong> Clean embossed white flat ribbons for seamless cable management<br>
-            <strong>Safety Protections:</strong> OVP, OPP, SCP, UVP, OCP, OTP
+            <strong>Connector:</strong> 8-Pin / 6+2 Pin PCIe GPU Power Extension<br>
+            <strong>Lighting:</strong> 5V 3-Pin ARGB Motherboard Sync (Aura/Mystic/RGB Fusion)<br>
+            <strong>Material:</strong> High-flex soft silicone casing with smooth light diffusion<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
           </div>
         </div>
         <div class="comp-actions">
           <div class="price-tag">
             <div class="price-label">Price</div>
-            <div class="price-amount">₱3,124</div>
+            <div class="price-amount">₱430</div>
+            <div class="price-date">Purchased 10.10</div>
           </div>
           <div class="action-btn-group">
-            <a href="https://shopee.ph/Gigabyte-P650SS-ICE-650W-80Plus-Silver-Fluid-Dynamic-Bearing-Power-Supply-Unit-GP-P650SS-ICE-itw-i.89762129.28075713859?xptdk=47b8c625-e0ae-4672-9d70-ac3b9e12cf51" target="_blank" rel="noopener" class="store-link-btn">
+            <a href="https://shopee.ph/Jungle-Leopard-ARGB-Light-Strip-Neon-Extension-Cable-for-PSU-GPU-5V-3PIN-Motherboard-Sync-24-8-6-12-16-Pin-Black-White-i.1063503159.46665542757" target="_blank" rel="noopener" class="store-link-btn">
               <span>Shopee</span>
             </a>
-            <button class="toggle-status-btn" onclick="togglePart('psu')">
-              <span>Mark as Purchased</span>
+            <button class="toggle-status-btn" onclick="togglePart('ext8pin')">
+              <span>Purchased</span>
             </button>
           </div>
         </div>
       </article>
 
-      <!-- 5. COOLER -->
-      <article class="comp-card" data-id="cooler" data-status="pending" data-price="3984">
-        <div class="comp-img-box" onclick="openModal('cooler')" title="Inspect Cooler">
-          <img src="images/cooler_transparent.png" alt="Jungle Leopard AstroBeat Digital AIO Cooler">
+      <!-- 8. 24-PIN ARGB EXTENSION CABLE -->
+      <article class="comp-card purchased" data-id="ext24pin" data-status="purchased" data-price="530">
+        <div class="comp-img-box" onclick="openModal('ext24pin')" title="Inspect 24-Pin ARGB Cable">
+          <img src="images/cable_argb_transparent.png" alt="Jungle Leopard 24-Pin ARGB Neon Cable">
           <span class="zoom-hint">Zoom</span>
         </div>
         <div class="comp-details">
           <div class="comp-badge-row">
-            <span class="part-category">CPU Cooling</span>
-            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+            <span class="part-category">Aesthetic Mod</span>
+            <span class="status-badge done">DONE PURCHASE</span>
           </div>
-          <h3 class="comp-name">Jungle Leopard AstroBeat Digital AIO</h3>
-          <p class="comp-specs">Digital Real-Time Temp Display on Pump • 5V 3-Pin ARGB Motherboard Sync • High-Density Aluminum Radiator • Micro-Skived Pure Copper Coldplate</p>
+          <h3 class="comp-name">1x Jungle Leopard 24-Pin ARGB Neon Cable</h3>
+          <p class="comp-specs">Silicone Neon Light Strip Extension for Main 24-Pin Motherboard Power • 5V 3-Pin ARGB Sync • Broad Neon Light Distribution • White/Silver Trim</p>
           <button class="specs-expand-btn" onclick="toggleDrawer(this)">
             <span>View Technical Details</span>
           </button>
           <div class="specs-drawer">
-            <strong>Pump Head:</strong> Real-time digital temperature readout<br>
-            <strong>Radiator:</strong> 240mm / 360mm high-efficiency liquid radiator<br>
-            <strong>Fans:</strong> Dual ARGB PWM fans (600 - 2000 RPM)<br>
-            <strong>Socket Compatibility:</strong> AMD AM4, AM5 & Intel LGA1700/1200/115X<br>
-            <strong>Tubing:</strong> Braided leak-resistant high-flex tubing
+            <strong>Connector:</strong> 24-Pin ATX Main Motherboard Power Extension<br>
+            <strong>Lighting:</strong> 5V 3-Pin ARGB Motherboard Sync with addressable LEDs<br>
+            <strong>Material:</strong> Flexible silicone neon tube with pure color blending<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
           </div>
         </div>
         <div class="comp-actions">
           <div class="price-tag">
             <div class="price-label">Price</div>
-            <div class="price-amount">₱3,984</div>
+            <div class="price-amount">₱530</div>
+            <div class="price-date">Purchased 10.10</div>
           </div>
           <div class="action-btn-group">
-            <a href="https://shopee.ph/Jungle-Leopard-AstroBeat-Digital-CPU-Aio-Cooler-240mm-360mm-5V-3PIN-ARGB-Mobo-Sync-CPU-Liquid-Cooler-For-Intel-LGA1155-LAG1200-LGA1700-AMD-AM5-AM4-i.1063503159.27316109200?xptdk=c556c904-8433-4f1a-b4cc-dfcaf535e153" target="_blank" rel="noopener" class="store-link-btn">
+            <a href="https://shopee.ph/Jungle-Leopard-ARGB-Light-Strip-Neon-Extension-Cable-for-PSU-GPU-5V-3PIN-Motherboard-Sync-24-8-6-12-16-Pin-Black-White-i.1063503159.46665542757" target="_blank" rel="noopener" class="store-link-btn">
               <span>Shopee</span>
             </a>
-            <button class="toggle-status-btn" onclick="togglePart('cooler')">
-              <span>Mark as Purchased</span>
+            <button class="toggle-status-btn" onclick="togglePart('ext24pin')">
+              <span>Purchased</span>
             </button>
           </div>
         </div>
       </article>
 
-      <!-- 6. GPU -->
-      <article class="comp-card" data-id="gpu" data-status="pending" data-price="25495">
-        <div class="comp-img-box" onclick="openModal('gpu')" title="Inspect GPU">
-          <img src="images/gpu_transparent.png" alt="Gigabyte GeForce RTX 5060 Aero OC Graphics Card">
+      <!-- 9. 1x FORWARD FAN -->
+      <article class="comp-card purchased" data-id="fanFwd" data-status="purchased" data-price="258">
+        <div class="comp-img-box" onclick="openModal('fanFwd')" title="Inspect Forward Fan">
+          <img src="images/fan_transwarp.png" alt="Jungle Leopard Transwarp RS Forward Fan">
           <span class="zoom-hint">Zoom</span>
         </div>
         <div class="comp-details">
           <div class="comp-badge-row">
-            <span class="part-category">Graphics Card</span>
-            <span class="status-badge pending">HAVE NOT PURCHASED</span>
+            <span class="part-category">Chassis Fan (Exhaust)</span>
+            <span class="status-badge done">DONE PURCHASE</span>
           </div>
-          <h3 class="comp-name">Gigabyte GeForce RTX 5060 AERO OC 8GB GDDR7</h3>
-          <p class="comp-specs">Next-Gen NVIDIA Blackwell Architecture • DLSS 4 & Ray Tracing • 8GB GDDR7 128-bit (28 Gbps) • WINDFORCE Hawk Fan Cooling System • Server-Grade Thermal Gel • Ice-White Aero Aesthetic</p>
+          <h3 class="comp-name">1x Jungle Leopard Transwarp RS Fan (Forward)</h3>
+          <p class="comp-specs">120mm PWM Fan • Infinity Mirror Center Hub • Dual Side Aluminum Trim • 5V 3-Pin ARGB Motherboard Sync • Standard Forward Blade Orientation</p>
           <button class="specs-expand-btn" onclick="toggleDrawer(this)">
             <span>View Technical Details</span>
           </button>
           <div class="specs-drawer">
-            <strong>Architecture:</strong> NVIDIA Blackwell with DLSS 4 Neural Rendering<br>
-            <strong>Core Clock:</strong> 2595 MHz OC (Reference: 2497 MHz)<br>
-            <strong>CUDA Cores:</strong> 3840 Cores<br>
-            <strong>Memory:</strong> 8 GB GDDR7 @ 28 Gbps (128-bit bus)<br>
-            <strong>Cooling:</strong> WINDFORCE Hawk Fan System with alternate spinning & server-grade thermal gel<br>
-            <strong>Card Dimensions:</strong> L=281mm W=117mm H=40mm (Fits comfortably in Astral case)<br>
-            <strong>Power:</strong> 8-pin connector, Recommended PSU: 500W+ (Matched with 650W Gigabyte ICE)<br>
-            <strong>Share of Build:</strong> ₱25,495 (50.06% of total budget)
+            <strong>Orientation:</strong> Forward blade (Ideal for rear chassis exhaust airflow)<br>
+            <strong>Lighting:</strong> Infinity mirror center + outer aperture ARGB ring<br>
+            <strong>Speed Control:</strong> 4-Pin PWM intelligent speed adjustment (600 - 2000 RPM)<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
           </div>
         </div>
         <div class="comp-actions">
           <div class="price-tag">
             <div class="price-label">Price</div>
-            <div class="price-amount" style="color: #1d4ed8;">₱25,495</div>
-            <div class="price-date" style="color: #1d4ed8;">50.1% of Total Build</div>
+            <div class="price-amount">₱258</div>
+            <div class="price-date">Purchased 10.10</div>
           </div>
           <div class="action-btn-group">
-            <a href="https://ecommerce.datablitz.com.ph/products/gigabyte-geforce-rtx-5060-aero-oc-8gb-gddr7-graphics-card" target="_blank" rel="noopener" class="store-link-btn">
-              <span>DataBlitz</span>
+            <a href="https://shopee.ph/Jungle-Leopard-Transwarp-RS-CPU-Fan-ARGB-120mm-5V-3PIN-Ring-Aperture-ARGB-Side-Aluminum-Sheet-Infinity-Mirror-Lighting-Mobo-Sync-4PIN-PWM-i.854953902.27473558193" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
             </a>
-            <button class="toggle-status-btn" onclick="togglePart('gpu')">
-              <span>Mark as Purchased</span>
+            <button class="toggle-status-btn" onclick="togglePart('fanFwd')">
+              <span>Purchased</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 10. 5x REVERSE FANS -->
+      <article class="comp-card purchased" data-id="fanRev" data-status="purchased" data-price="1290">
+        <div class="comp-img-box" onclick="openModal('fanRev')" title="Inspect Reverse Fans">
+          <img src="images/fan_transwarp.png" alt="Jungle Leopard Transwarp RS Reverse Fans">
+          <span class="zoom-hint">Zoom</span>
+        </div>
+        <div class="comp-details">
+          <div class="comp-badge-row">
+            <span class="part-category">Chassis Fans (Intake x5)</span>
+            <span class="status-badge done">DONE PURCHASE</span>
+          </div>
+          <h3 class="comp-name">5x Jungle Leopard Transwarp RS Fans (Reverse)</h3>
+          <p class="comp-specs">Reverse Airflow Blades (Clean Unobstructed Face) • Infinity Mirror Hubs • 120mm PWM • 5V 3-Pin ARGB Mobo Sync • Shroud & Side Intakes</p>
+          <button class="specs-expand-btn" onclick="toggleDrawer(this)">
+            <span>View Technical Details</span>
+          </button>
+          <div class="specs-drawer">
+            <strong>Quantity:</strong> 5 Units (₱258 each = ₱1,290 total)<br>
+            <strong>Orientation:</strong> Reverse blades (Displays full infinity mirror face without visible cage struts)<br>
+            <strong>Placement:</strong> Bottom PSU shroud intake (3x) + Side intake (2x)<br>
+            <strong>Purchase Date:</strong> 10.10 Sale
+          </div>
+        </div>
+        <div class="comp-actions">
+          <div class="price-tag">
+            <div class="price-label">Price</div>
+            <div class="price-amount">₱1,290</div>
+            <div class="price-date">Purchased 10.10 (5x)</div>
+          </div>
+          <div class="action-btn-group">
+            <a href="https://shopee.ph/Jungle-Leopard-Transwarp-RS-CPU-Fan-ARGB-120mm-5V-3PIN-Ring-Aperture-ARGB-Side-Aluminum-Sheet-Infinity-Mirror-Lighting-Mobo-Sync-4PIN-PWM-i.854953902.27473558193" target="_blank" rel="noopener" class="store-link-btn">
+              <span>Shopee</span>
+            </a>
+            <button class="toggle-status-btn" onclick="togglePart('fanRev')">
+              <span>Purchased</span>
             </button>
           </div>
         </div>
@@ -1308,7 +1502,7 @@
     <div id="modalPrice" class="modal-price">₱0</div>
     <p id="modalDesc" class="modal-desc">Description</p>
     <a id="modalStoreLink" href="#" target="_blank" rel="noopener" class="modal-store-link">
-      <span>Open Retailer Store</span>
+      <span>Open Shopee Store</span>
     </a>
   </div>
 </div>
@@ -1378,7 +1572,25 @@
     } catch(e){}
   }
 
-  /* Audio Toggle Button (No Emojis) */
+  function playHappySqueak(){
+    try {
+      var ctx = getAudioCtx();
+      if(!ctx) return;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(660, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.14, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    } catch(e){}
+  }
+
+  /* Audio Toggle */
   var audioBtn = document.getElementById("audioToggleBtn");
   var soundLabel = document.getElementById("soundLabel");
   audioBtn.addEventListener("click", function(){
@@ -1472,10 +1684,10 @@
     window.addEventListener("pointerup", pointerUp);
   }
 
-  /* ---------- Geometric Light Dots Particle System (No Emojis) ---------- */
+  /* ---------- Sparkle Dots Particle System ---------- */
   function spawnLightDots(originX, originY, count){
     if(reduceMotion) return;
-    var n = count || 10;
+    var n = count || 12;
     for(var i=0; i<n; i++){
       (function(idx){
         var el = document.createElement("div");
@@ -1485,9 +1697,9 @@
         document.body.appendChild(el);
 
         var angle = (Math.PI * 2 * idx) / n + (Math.random() * 0.4 - 0.2);
-        var dist = 40 + Math.random() * 55;
+        var dist = 42 + Math.random() * 60;
         var dx = Math.cos(angle) * dist;
-        var dy = Math.sin(angle) * dist - 15;
+        var dy = Math.sin(angle) * dist - 18;
 
         requestAnimationFrame(function(){
           el.style.transition = "transform 0.75s cubic-bezier(.22,1,.36,1), opacity 0.7s ease";
@@ -1500,16 +1712,26 @@
     }
   }
 
-  /* ---------- Cinnamoroll Interaction ---------- */
+  /* ---------- Cinnamoroll Interaction & Cute Personality ---------- */
   var companion = document.getElementById("companion");
-  companion.addEventListener("click", function(){
+
+  function petCompanion(){
     companion.classList.remove("wag");
+    companion.classList.remove("happy");
     void companion.offsetWidth;
     companion.classList.add("wag");
-    playPop(784);
+    companion.classList.add("happy");
+    playHappySqueak();
+
     var rect = companion.getBoundingClientRect();
-    spawnLightDots(rect.left + rect.width/2, rect.top + 20, 8);
-  });
+    spawnLightDots(rect.left + rect.width/2, rect.top + 25, 14);
+
+    setTimeout(function(){
+      companion.classList.remove("happy");
+    }, 1200);
+  }
+
+  companion.addEventListener("click", petCompanion);
 
   if(isFinePointer && !reduceMotion){
     window.addEventListener("pointermove", function(e){
@@ -1521,7 +1743,7 @@
     });
   }
 
-  /* ---------- Parts Data & State Management ---------- */
+  /* ---------- Parts Data & State Management (10 Components) ---------- */
   var PARTS = {
     cpu: {
       name: "AMD Ryzen 7 5700X",
@@ -1541,50 +1763,86 @@
       url: "https://shopee.ph/Asrock-B550M-Pro-RS-DDR4-AM4-Socket-Micro-ATX-Motherboard-i.124930893.51255236137",
       desc: "Micro ATX AM4 Motherboard with 4x DDR4 slots, PCIe 4.0 x16, Dual M.2, and clean silver-white heatsinks."
     },
-    case: {
-      name: "Coolman Astral M-ATX PC Case",
-      price: 3115,
-      defaultStatus: false,
-      purchasedDate: null,
-      img: "images/case_transparent.png",
-      url: "https://shopee.ph/Coolman-Astral-M-ATX-PC-Case-with-Digital-Screen-Display-(Black-White)-i.21380649.46663991112",
-      desc: "Micro-ATX Panoramic Tempered Glass Case equipped with an integrated real-time digital screen for system stats."
-    },
-    psu: {
-      name: "Gigabyte P650SS ICE 650W",
-      price: 3124,
-      defaultStatus: false,
-      purchasedDate: null,
-      img: "images/psu_transparent.png",
-      url: "https://shopee.ph/Gigabyte-P650SS-ICE-650W-80Plus-Silver-Fluid-Dynamic-Bearing-Power-Supply-Unit-GP-P650SS-ICE-itw-i.89762129.28075713859?xptdk=47b8c625-e0ae-4672-9d70-ac3b9e12cf51",
-      desc: "80 Plus Silver certified 650W power supply featuring a pure ice-white casing, flat white cables, and 120mm FDB fan."
-    },
     cooler: {
-      name: "Jungle Leopard AstroBeat Digital AIO",
-      price: 3984,
-      defaultStatus: false,
-      purchasedDate: null,
-      img: "images/cooler_transparent.png",
-      url: "https://shopee.ph/Jungle-Leopard-AstroBeat-Digital-CPU-Aio-Cooler-240mm-360mm-5V-3PIN-ARGB-Mobo-Sync-CPU-Liquid-Cooler-For-Intel-LGA1155-LAG1200-LGA1700-AMD-AM5-AM4-i.1063503159.27316109200?xptdk=c556c904-8433-4f1a-b4cc-dfcaf535e153",
-      desc: "High-performance liquid CPU cooler featuring a pump cap digital display for live CPU temperatures and 5V ARGB lighting."
+      name: "Deepcool LE240 / LE360 V2 ARGB",
+      price: 3300,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/cooler_deepcool_transparent.png",
+      url: "https://shopee.ph/Deepcool-LE240-V2-LE360-V2-ARGB-CPU-AIO-Cooler-360mm-5V-3PIN-ARGB-Mobo-Lighting-Sync-For-Intel-LGA1155-LGA1200-LGA1700-AMD-AM5-AM4-i.854953902.26377384253",
+      desc: "Frosted Pump Head with Diffused ARGB Glow, 3400 RPM High-Speed Motor, and Anti-Leak technology."
     },
     gpu: {
-      name: "Gigabyte GeForce RTX 5060 AERO OC 8GB GDDR7",
-      price: 25495,
-      defaultStatus: false,
-      purchasedDate: null,
-      img: "images/gpu_transparent.png",
-      url: "https://ecommerce.datablitz.com.ph/products/gigabyte-geforce-rtx-5060-aero-oc-8gb-gddr7-graphics-card",
-      desc: "Powered by NVIDIA Blackwell architecture, 8GB ultra-fast GDDR7 memory, DLSS 4, and Aero ice-white triple fans."
+      name: "MSI GeForce RTX 5060 Ti 8GB GDDR7 Ventus 2X White Plus",
+      price: 28395,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/gpu_msi_ventus.png",
+      url: "https://shopee.ph/MSI-Geforce-RTX-5060-Ti-8GB-GDDR7-Ventus-2X-White-Plus-Dual-Fans-Graphics-Card-itw-i.89762129.45310302967",
+      desc: "Dual-fan STORMFORCE cooling system, pure white aesthetic, 8GB GDDR7 high-speed memory, Zero Frozr fan stop."
+    },
+    psu: {
+      name: "Acer Full Modular ATX Power Supply",
+      price: 2853,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/psu_acer.png",
+      url: "https://shopee.ph/Acer-Full-Modular-Computer-ATX-Power-Supply-550W-650W-750W-1000W-PSU-Certified-80Plus-Bronze-i.1352712158.26161908712",
+      desc: "80 Plus Bronze certified full modular power supply with flat detachable cables and 120mm cooling fan."
+    },
+    case: {
+      name: "Coolman Astral M-ATX PC Case",
+      price: 2680,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/case_transparent.png",
+      url: "https://shopee.ph/user/purchase/order/245335745214786?type=7",
+      desc: "Micro-ATX Panoramic Tempered Glass Case equipped with an integrated real-time digital screen for system stats."
+    },
+    ext8pin: {
+      name: "1x Jungle Leopard 8-Pin ARGB Neon Cable",
+      price: 430,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/cable_argb_transparent.png",
+      url: "https://shopee.ph/Jungle-Leopard-ARGB-Light-Strip-Neon-Extension-Cable-for-PSU-GPU-5V-3PIN-Motherboard-Sync-24-8-6-12-16-Pin-Black-White-i.1063503159.46665542757",
+      desc: "Silicone neon light strip extension for GPU 8-Pin power with 5V 3-Pin ARGB motherboard lighting synchronization."
+    },
+    ext24pin: {
+      name: "1x Jungle Leopard 24-Pin ARGB Neon Cable",
+      price: 530,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/cable_argb_transparent.png",
+      url: "https://shopee.ph/Jungle-Leopard-ARGB-Light-Strip-Neon-Extension-Cable-for-PSU-GPU-5V-3PIN-Motherboard-Sync-24-8-6-12-16-Pin-Black-White-i.1063503159.46665542757",
+      desc: "Silicone neon light strip extension for Main Motherboard 24-Pin power with smooth addressable RGB light diffusion."
+    },
+    fanFwd: {
+      name: "1x Jungle Leopard Transwarp RS Fan (Forward)",
+      price: 258,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/fan_transwarp.png",
+      url: "https://shopee.ph/Jungle-Leopard-Transwarp-RS-CPU-Fan-ARGB-120mm-5V-3PIN-Ring-Aperture-ARGB-Side-Aluminum-Sheet-Infinity-Mirror-Lighting-Mobo-Sync-4PIN-PWM-i.854953902.27473558193",
+      desc: "120mm PWM forward fan with infinity mirror center hub and aluminum side trim for rear chassis exhaust."
+    },
+    fanRev: {
+      name: "5x Jungle Leopard Transwarp RS Fans (Reverse)",
+      price: 1290,
+      defaultStatus: true,
+      purchasedDate: "10.10",
+      img: "images/fan_transwarp.png",
+      url: "https://shopee.ph/Jungle-Leopard-Transwarp-RS-CPU-Fan-ARGB-120mm-5V-3PIN-Ring-Aperture-ARGB-Side-Aluminum-Sheet-Infinity-Mirror-Lighting-Mobo-Sync-4PIN-PWM-i.854953902.27473558193",
+      desc: "5x Reverse airflow 120mm PWM fans showing clean infinity mirror faces for bottom and side chassis intake."
     }
   };
 
-  var TOTAL_TARGET = 50927;
+  var TOTAL_TARGET = 54945;
   var userState = {};
 
   function loadState(){
     try {
-      var saved = localStorage.getItem("zz_pc_goal_state_v2");
+      var saved = localStorage.getItem("zz_pc_goal_state_v3");
       if(saved){
         userState = JSON.parse(saved);
       } else {
@@ -1597,7 +1855,7 @@
 
   function saveState(){
     try {
-      localStorage.setItem("zz_pc_goal_state_v2", JSON.stringify(userState));
+      localStorage.setItem("zz_pc_goal_state_v3", JSON.stringify(userState));
     } catch(e){}
   }
 
@@ -1678,7 +1936,7 @@
 
     if(userState[id]){
       playChime();
-      spawnLightDots(x, y, 12);
+      spawnLightDots(x, y, 14);
     } else {
       playPop(440);
       spawnLightDots(x, y, 6);
@@ -1689,8 +1947,9 @@
   document.getElementById("resetDefaultsBtn").addEventListener("click", function(){
     resetToDefaultState();
     updateDashboard();
-    playPop(520);
-    spawnLightDots(window.innerWidth/2, window.innerHeight/2, 10);
+    playChime();
+    spawnLightDots(window.innerWidth/2, window.innerHeight/2, 14);
+    bubbleText.textContent = "All 10 parts reset to official 10.10 purchase state!";
   });
 
   // Filter Toolbar Tabs
@@ -1746,7 +2005,7 @@
     modalPrice.textContent = "₱" + part.price.toLocaleString("en-US");
     modalDesc.textContent = part.desc;
     modalStoreLink.href = part.url;
-    modalStoreLink.innerHTML = "<span>Open " + (part.url.indexOf("datablitz") !== -1 ? "DataBlitz" : "Shopee") + " Store</span>";
+    modalStoreLink.innerHTML = "<span>Open Shopee Store</span>";
 
     modal.classList.add("open");
     playPop(640);
